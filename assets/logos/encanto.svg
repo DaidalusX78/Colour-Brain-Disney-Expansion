@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <defs>
+    <linearGradient id="encantoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="25%" stop-color="#ef4444" />
+      <stop offset="50%" stop-color="#ec4899" />
+      <stop offset="75%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-family="'Fredoka', 'Arial Black', sans-serif" font-weight="900" font-size="44" letter-spacing="3" fill="url(#encantoGrad)" filter="url(#shadow)">
+    ENCANTO
+  </text>
+  <circle cx="26" cy="48" r="4" fill="#facc15" />
+  <circle cx="274" cy="48" r="4" fill="#06b6d4" />
+  <path d="M 40 68 Q 150 78 260 68" stroke="#facc15" stroke-width="2.5" fill="none" stroke-linecap="round" />
+</svg>

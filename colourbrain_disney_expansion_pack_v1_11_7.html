@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#06b6d4">
+    <link rel="manifest" href="manifest.json">
+    <!-- Version: v1.11.7 | File: colourbrain_disney_expansion_pack_v1_11_7.html -->
+    <title>Colour Brain: Disney & Pixar Expansion Pack (v1.11.7)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- External Trivia Questions Database -->
+    <script src="questions.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    aspectRatio: {
+                        // Official 63mm x 88mm Playing Card Ratio (~0.7159)
+                        'card': '63 / 88'
+                    },
+                    fontFamily: {
+                        game: ['Fredoka', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card-physical': '0 12px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.85)',
+                        'card-inset': 'inset 0 2px 4px rgba(0, 0, 0, 0.06)',
+                        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                        '2xs': '0 1px 1px 0 rgba(0, 0, 0, 0.04)'
+                    },
+                    borderRadius: {
+                        'xs': '0.125rem'
+                    },
+                    spacing: {
+                        '13': '3.25rem'
+                    },
+                    scale: {
+                        '102': '1.02'
+                    },
+                    ringWidth: {
+                        '3': '3px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+        /* Lock viewport tightly to prevent scrolling on all devices */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 3D Perspective Card Flip */
+        .perspective-container {
+            perspective: 1400px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.45s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Neutral Tabletop Themes (Clean Off-White) */
+        body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at 50% 20%, #ffffff 0%, #f1f5f9 100%);
+            color: #0f172a;
+        }
+
+        body.theme-classic,
+        body.theme-disney,
+        body.theme-pixar,
+        body.theme-lucasfilm,
+        body.theme-marvel,
+        body.theme-disneychannel,
+        body.theme-all {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at 50% 20%, #ffffff 0%, #f1f5f9 100%);
+        }
+    </style>
+</head>
+
+<body class="theme-all text-slate-800 flex flex-col justify-between relative">
+
+    <!-- ================= TOP APP BAR ================= -->
+    <header
+        class="w-full flex-none px-4 py-2.5 flex items-center justify-between text-slate-800 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+        <!-- Brand / Theme Badge -->
+        <div class="flex items-center space-x-2">
+            <div>
+                <h1
+                    class="text-sm font-extrabold font-game tracking-wider uppercase flex items-center gap-1.5 leading-none text-slate-900">
+                    <span>COLOUR<span class="text-[#06b6d4]">BRAIN</span></span>
+                    <span class="text-[10px] font-mono font-medium text-slate-400" title="App Version">v1.11.7</span>
+                </h1>
+                <p class="text-[10px] text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
+            </div>
+        </div>
+
+        <!-- Right Actions: Read Aloud, How to Play, Fullscreen & Hamburger Menu -->
+        <div class="flex items-center space-x-2">
+            <!-- Voice Read-Aloud Button -->
+            <button id="topSpeakBtn" type="button" onclick="speakCurrentCard()"
+                class="p-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 transition-all text-slate-700 border border-slate-200/90 shadow-xs"
+                title="Read Card Aloud (S)" aria-label="Read Card Aloud">
+                <i id="topSpeakIcon" data-lucide="volume-2" class="w-5 h-5 text-[#06b6d4]"></i>
+            </button>
+
+            <!-- How to Play / Rules Guide Button -->
+            <button onclick="openHowToPlayModal()"
+                class="p-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 transition-all text-slate-700 border border-slate-200/90 shadow-xs"
+                title="How to Play & Rules" aria-label="How to Play & Rules">
+                <i data-lucide="help-circle" class="w-5 h-5 text-[#06b6d4]"></i>
+            </button>
+
+            <!-- Fullscreen Toggle Button -->
+            <button onclick="toggleFullscreen()"
+                class="p-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 transition-all text-slate-700 border border-slate-200/90 shadow-xs"
+                title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+                <i id="fullscreenIcon" data-lucide="maximize" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Hamburger Menu Button -->
+            <button onclick="toggleMenu(true)"
+                class="p-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 transition-all text-slate-700 border border-slate-200/90 shadow-xs"
+                aria-label="Game Settings">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= MAIN GAME ARENA (LOCKED VIEWPORT) ================= -->
+    <main id="gameMain"
+        class="flex-1 w-full max-w-4xl mx-auto px-3 py-1 sm:py-2 flex flex-col items-center justify-between gap-1.5 sm:gap-2.5 overflow-hidden min-h-0">
+
+        <!-- ================= TOP SCORES SECTION (ABOVE QUESTION CARD) ================= -->
+        <div id="topScoreboard" class="w-full max-w-2xl flex-none flex flex-col items-center gap-1 pt-2 sm:pt-4">
+            <!-- Status Badges Row: Target Score, Sudden Death, Pot Rollover, & Round Timer -->
+            <div class="flex flex-wrap items-center justify-center gap-1.5">
+                <span id="targetScoreBadge"
+                    class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-slate-200/80 text-slate-600 border border-slate-300/70 shadow-2xs">
+                    First to 10
+                </span>
+                <span id="suddenDeathBadge"
+                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs animate-pulse">
+                    ⚡ SUDDEN DEATH
+                </span>
+                <span id="potBadge"
+                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs">
+                    Pot: 1 pt
+                </span>
+                <button id="roundTimerBadge" type="button" onclick="restartRoundTimer()"
+                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1 active:scale-95 transition-all"
+                    title="Click to reset 30s timer">
+                    <i data-lucide="timer" class="w-3 h-3"></i>
+                    <span id="roundTimerText">30s</span>
+                </button>
+                <span id="scoreboardTitle" class="sr-only">SCORES</span>
+                <span id="scoreboardSubtitle" class="sr-only">First to 10</span>
+            </div>
+
+            <!-- Players represented by boxes coloured to their colour theme -->
+            <div id="liveTeamsList"
+                class="w-full flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1">
+                <!-- Player score boxes dynamically injected via JS -->
+            </div>
+        </div>
+
+        <!-- ================= CENTER CARD DISPLAY STAGE (63mm x 88mm ratio preserved) ================= -->
+        <div id="cardStageContainer"
+            class="flex-1 w-full flex items-center justify-center overflow-hidden min-h-0 py-0.5">
+            <div
+                class="h-full max-h-[50vh] sm:max-h-[56vh] md:max-h-[60vh] aspect-card flex-shrink-0 flex items-center justify-center perspective-container w-auto max-w-[92vw]">
+                <div id="playingCard"
+                    class="relative w-full h-full transform-style-3d cursor-pointer select-none rounded-[22px] shadow-card-physical"
+                    onclick="flipCard()">
+
+                    <!-- ================= CARD FRONT (QUESTION) ================= -->
+                    <div
+                        class="absolute inset-0 w-full h-full bg-[#fdfdfb] rounded-[22px] border-[5px] border-white pt-2.5 sm:pt-4 px-4 sm:px-6 pb-2 flex flex-col justify-between backface-hidden shadow-card-physical overflow-hidden">
+
+                        <!-- Name of Film / TV show centre aligned at the top (Takes up ~26% of card, Logo with Text Fallback) -->
+                        <div
+                            class="w-full text-center flex-none flex items-center justify-center h-[26%] max-h-[28%] pt-1 pb-0 overflow-hidden">
+                            <!-- Authentic Franchise Logo Image (Expanded to ~26% card height) -->
+                            <img id="frontFranchiseLogo" src="" alt="Franchise Logo"
+                                class="max-h-full max-w-[88%] object-contain hidden pointer-events-none drop-shadow-md transition-all" />
+                            <!-- Fallback Franchise Badge -->
+                            <span id="frontFranchiseBadge"
+                                class="inline-block text-xs sm:text-base font-extrabold tracking-widest uppercase px-4 py-2 rounded-full bg-slate-900 text-white font-game shadow-xs">
+                                ENCANTO
+                            </span>
+                        </div>
+
+                        <!-- Main Question Text Area (Reduced top margin, safe bottom clearance away from silhouette) -->
+                        <div class="flex-1 flex items-center justify-center text-center px-2 pt-0 pb-16 sm:pb-20 overflow-hidden">
+                            <h2 id="frontQuestionText"
+                                class="text-base sm:text-lg md:text-xl font-black text-slate-900 leading-snug font-game max-h-full overflow-hidden text-balance">
+                                What colour is Bruno's ruana (poncho) in Encanto?
+                            </h2>
+                        </div>
+
+                        <!-- Silhouette Container in Bottom-Right Corner (Overlapping right & bottom edges) -->
+                        <div id="frontSilhouetteContainer"
+                            class="absolute -bottom-7 -right-7 w-[12rem] h-[12rem] flex items-center justify-center pointer-events-none select-none z-20"
+                            title="1 COLOUR">
+                            <img id="frontSilhouetteImg" src="assets/silhouettes/mickey_silhouette.svg"
+                                alt="Mickey Silhouette"
+                                class="w-full h-full object-contain pointer-events-none drop-shadow-md" />
+                            <div id="frontSilhouetteCountWrapper"
+                                class="absolute flex flex-col items-center justify-center text-center pointer-events-none select-none"
+                                style="left: 64.4%; top: 64.4%; transform: translate(-50%, -50%);">
+                                <span id="frontColorCountNumber"
+                                    class="text-white font-black font-game text-3xl sm:text-4xl leading-none drop-shadow-md">
+                                    1
+                                </span>
+                                <span id="frontColorCountWord"
+                                    class="text-white font-black font-game text-[9px] sm:text-[10px] tracking-wider uppercase leading-none mt-1 drop-shadow-md">
+                                    COLOUR
+                                </span>
+                            </div>
+                            <!-- Screen-reader / fallback element -->
+                            <span id="frontColorCountBadge" class="sr-only">1 COLOUR</span>
+                        </div>
+                    </div>
+
+                    <!-- ================= CARD BACK (ANSWER) - MATCHING WHITE ================= -->
+                    <div
+                        class="absolute inset-0 w-full h-full bg-[#fdfdfb] text-slate-900 rounded-[22px] border-[5px] border-white flex flex-col justify-between backface-hidden rotate-y-180 shadow-card-physical overflow-hidden">
+
+                        <!-- Answer Picture (100% full width, covers top 50% of card, touching top, left and right edges) -->
+                        <div id="backImageContainer"
+                            class="hidden w-full h-1/2 flex items-center justify-center overflow-hidden flex-none relative bg-slate-100">
+                            <img id="backAnswerImage" src="" alt="Answer Visual"
+                                class="w-full h-full object-cover object-top pointer-events-none" />
+                        </div>
+
+                        <!-- Colour Swatches, Names & Context Explanation (Bottom 50% of card, reduced top margin/padding) -->
+                        <div id="backContentContainer"
+                            class="w-full h-1/2 pt-1.5 sm:pt-2 px-3 pb-2 flex flex-col items-center justify-center text-center gap-1.5 overflow-hidden flex-1">
+                            <!-- Swatches Grid -->
+                            <div id="backSwatchesGrid" class="flex items-center justify-center gap-2 sm:gap-3">
+                                <!-- Swatch boxes injected via JS -->
+                            </div>
+
+                            <h3 id="backColorNames"
+                                class="text-lg sm:text-xl font-black text-slate-900 font-game uppercase tracking-wide leading-none">
+                                GREEN
+                            </h3>
+
+                            <!-- Explanation text (50% bigger with slight top margin/padding) -->
+                            <p id="backExplanation"
+                                class="text-base sm:text-lg md:text-xl text-slate-600 font-medium leading-relaxed px-2 mt-1.5 sm:mt-2.5 pt-0.5 overflow-y-auto no-scrollbar">
+                                Bruno wears his signature emerald jade ruana decorated with hourglass embroidery!
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BOTTOM CONTROLS & CONFIRM BUTTON ================= -->
+        <div id="bottomControlsPanel" class="w-full max-w-md flex-none flex flex-col gap-2.5 pb-5 sm:pb-8">
+            <!-- Navigation & Card Flip Buttons (Doubled button height) -->
+            <div class="grid grid-cols-4 gap-2.5">
+                <button id="prevBtn" onclick="prevCard()"
+                    class="col-span-1 h-14 sm:h-16 rounded-2xl bg-white hover:bg-slate-50 active:scale-95 text-slate-700 flex items-center justify-center font-black text-xs sm:text-sm uppercase tracking-wider font-game transition-all shadow-sm border border-slate-200/90"
+                    title="Previous Question">
+                    <span id="prevBtnLabel">PREVIOUS</span>
+                </button>
+                <button id="flipBtn" onclick="flipCard()"
+                    class="col-span-2 h-14 sm:h-16 rounded-2xl text-white font-black text-xs sm:text-sm uppercase tracking-wider font-game flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
+                    style="background-color: var(--player-theme-color, #06b6d4);">
+                    <i data-lucide="sparkles" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <span id="flipBtnLabel">ANSWER</span>
+                </button>
+                <button id="nextBtn" onclick="nextCard()"
+                    class="col-span-1 h-14 sm:h-16 rounded-2xl bg-white hover:bg-slate-50 active:scale-95 text-slate-700 flex items-center justify-center font-black text-xs sm:text-sm uppercase tracking-wider font-game transition-all shadow-sm border border-slate-200/90"
+                    title="Next Question">
+                    <span id="nextBtnLabel">NEXT</span>
+                </button>
+            </div>
+
+            <!-- Scoring Action Bar (CONFIRM SCORES button at the bottom to prevent accidental presses) -->
+            <div id="scoringActionBar" class="w-full flex-none">
+                <!-- Injected dynamically via JS: "CONFIRM SCORES" button or Round feedback -->
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= HAMBURGER DRAWER MENU (WHITE BACKGROUND WITH #06b6d4 HIGHLIGHTS) ================= -->
+    <div id="sideMenuOverlay"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-200"
+        onclick="toggleMenu(false)">
+        <div class="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white border-l border-slate-200 text-slate-800 p-5 flex flex-col justify-between shadow-2xl"
+            onclick="event.stopPropagation()">
+            <div class="space-y-4 overflow-y-auto no-scrollbar">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-[#06b6d4]"></i>
+                        <h2 id="menuTitle"
+                            class="text-base font-bold font-game uppercase tracking-wider text-slate-900">Game
+                            Settings</h2>
+                    </div>
+                    <button onclick="toggleMenu(false)"
+                        class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Multi-Language Selector (SVG Flags Only, No Text) -->
+                <div class="flex items-center justify-between py-2 border-b border-slate-200">
+                    <span id="menuLanguageLabel"
+                        class="text-xs font-bold text-slate-500 uppercase tracking-wider">Language</span>
+                    <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                        <!-- English / UK Flag Button -->
+                        <button id="langBtn-en" type="button" onclick="setLanguage('en')"
+                            class="p-1.5 rounded-xl border-2 border-[#06b6d4] bg-[#06b6d4]/15 shadow-sm active:scale-95 transition-all"
+                            title="English" aria-label="English">
+                            <svg class="w-6 h-4 rounded-xs shadow-xs block pointer-events-none" viewBox="0 0 60 30"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <clipPath id="ukClip">
+                                    <path d="M0,0 v30 h60 v-30 z" />
+                                </clipPath>
+                                <clipPath id="ukDiag">
+                                    <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+                                </clipPath>
+                                <g clip-path="url(#ukClip)">
+                                    <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+                                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                    <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukDiag)" stroke="#C8102E"
+                                        stroke-width="4" />
+                                    <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                                    <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+                                </g>
+                            </svg>
+                        </button>
+
+                        <!-- Spanish / Spain Flag Button -->
+                        <button id="langBtn-es" type="button" onclick="setLanguage('es')"
+                            class="p-1.5 rounded-xl border-2 border-transparent hover:bg-white opacity-50 hover:opacity-100 active:scale-95 transition-all"
+                            title="Español" aria-label="Español">
+                            <svg class="w-6 h-4 rounded-xs shadow-xs block pointer-events-none" viewBox="0 0 60 30"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect width="60" height="30" fill="#AA151B" />
+                                <rect y="7.5" width="60" height="15" fill="#F1BF00" />
+                                <circle cx="16" cy="15" r="3.5" fill="#AA151B" />
+                                <circle cx="16" cy="15" r="2.2" fill="#F1BF00" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Audio Toggle -->
+                <div class="flex items-center justify-between py-2 border-y border-slate-200">
+                    <span id="menuSoundTitle" class="text-xs font-bold text-slate-600">Sound Effects</span>
+                    <button id="menuSoundBtn" onclick="toggleAudio()"
+                        class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 text-slate-800 border border-slate-200">
+                        <i id="menuSoundIcon" data-lucide="volume-2" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                        <span id="menuSoundLabel">Enabled</span>
+                    </button>
+                </div>
+
+                <!-- Pot Rollover House Rule Toggle -->
+                <div class="flex items-center justify-between py-2 border-b border-slate-200">
+                    <div class="space-y-0.5 pr-2">
+                        <span id="menuPotTitle" class="text-xs font-bold text-slate-800 block">Pot Rollover</span>
+                        <span id="menuPotSubtitle" class="text-[10px] text-slate-500 block leading-tight">House rule:
+                            0-pt rounds
+                            roll over</span>
+                    </div>
+                    <button id="menuPotToggleBtn" type="button" onclick="togglePotRollover()"
+                        class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
+                        role="switch" aria-checked="false" aria-label="Toggle Pot Rollover">
+                        <span id="menuPotToggleThumb"
+                            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                    </button>
+                </div>
+
+                <!-- 30s Round Timer Toggle -->
+                <div class="flex items-center justify-between py-2 border-b border-slate-200">
+                    <div class="space-y-0.5 pr-2">
+                        <span id="menuTimerTitle" class="text-xs font-bold text-slate-800 block">30s Round Timer</span>
+                        <span id="menuTimerSubtitle" class="text-[10px] text-slate-500 block leading-tight">Countdown clock per question</span>
+                    </div>
+                    <button id="menuTimerToggleBtn" type="button" onclick="toggleRoundTimer()"
+                        class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
+                        role="switch" aria-checked="false" aria-label="Toggle 30s Round Timer">
+                        <span id="menuTimerToggleThumb"
+                            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                    </button>
+                </div>
+
+                <!-- Voice Read-Aloud (Auto TTS Host) Toggle -->
+                <div class="flex items-center justify-between py-2 border-b border-slate-200">
+                    <div class="space-y-0.5 pr-2">
+                        <span id="menuVoiceTitle" class="text-xs font-bold text-slate-800 block">Auto Read-Aloud</span>
+                        <span id="menuVoiceSubtitle" class="text-[10px] text-slate-500 block leading-tight">Voice host reads cards (EN / ES)</span>
+                    </div>
+                    <button id="menuVoiceToggleBtn" type="button" onclick="toggleAutoReadAloud()"
+                        class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
+                        role="switch" aria-checked="false" aria-label="Toggle Auto Read-Aloud">
+                        <span id="menuVoiceToggleThumb"
+                            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                    </button>
+                </div>
+
+                <!-- Configurable Target Winning Score -->
+                <div class="space-y-1.5 py-2 border-b border-slate-200">
+                    <div class="flex items-center justify-between">
+                        <span id="menuTargetScoreLabel" class="text-xs font-bold text-slate-800">Winning Target</span>
+                        <span id="menuSeenCardsStatus" class="text-[10px] font-mono text-slate-400" title="Unseen-First Smart Shuffle Progress">0/81 seen</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" data-target="5" onclick="setTargetScore(5)"
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">5 pts</button>
+                        <button type="button" data-target="10" onclick="setTargetScore(10)"
+                            class="target-score-btn py-1.5 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all">10 pts</button>
+                        <button type="button" data-target="15" onclick="setTargetScore(15)"
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">15 pts</button>
+                        <button type="button" data-target="0" onclick="setTargetScore(0)"
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">∞ Free</button>
+                    </div>
+                </div>
+
+                <!-- Rules Quick Reminder (Dynamically Reflects Standard vs Pot Rollover Mode) -->
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-[11px] text-slate-600 space-y-1">
+                    <p id="menuRulesTitle" class="font-bold text-[#06b6d4] uppercase tracking-wider text-[10px]">How
+                        Points Work
+                        (Official Rules)</p>
+                    <div id="menuRulesList" class="space-y-1">
+                        <p>• Everyone plays colour cards face down.</p>
+                        <p>• Reveal simultaneously!</p>
+                        <p>• <strong>Everyone right:</strong> 0 pts.</p>
+                        <p>• <strong>Nobody right:</strong> 0 pts.</p>
+                        <p>• <strong>Some right:</strong> 1 pt for each correct team.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons in Drawer: New Game & Edit Players -->
+            <div class="pt-4 border-t border-slate-200 space-y-2">
+                <!-- How to Play Guide Button -->
+                <button id="menuHowToPlayBtn" onclick="openHowToPlayModal()"
+                    class="w-full py-2 rounded-xl border border-[#06b6d4]/40 bg-[#06b6d4]/10 hover:bg-[#06b6d4]/20 text-[#0891b2] font-bold text-xs uppercase font-game flex items-center justify-center gap-1.5 transition-all shadow-2xs">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                    <span id="menuHowToPlayLabel">How to Play & Rules</span>
+                </button>
+
+                <!-- Return to Start / New Game Button -->
+                <button id="menuNewGameBtn" onclick="returnToStartNewGame()"
+                    class="w-full py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs uppercase font-game flex items-center justify-center gap-1.5 transition-all shadow-xs">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                    <span id="menuNewGameLabel">New Game / Setup</span>
+                </button>
+
+                <!-- Edit Teams Button -->
+                <button id="menuChangePlayersBtn" onclick="openWizard(2)"
+                    class="w-full py-2.5 rounded-xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-xs uppercase font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                    Edit Teams & Colours
+                </button>
+
+                <button id="menuResetScoresBtn" onclick="resetMatchScores()"
+                    class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 border border-slate-200">
+                    Reset Scores
+                </button>
+
+                <!-- Question Ingestion: Google Sheets Sync + CSV Import & Export -->
+                <div class="space-y-2 pt-2 border-t border-slate-200">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Question Data
+                            Management</label>
+                        <button type="button" onclick="resetSeenCardsHistory()"
+                            class="text-[10px] font-bold text-[#0891b2] hover:underline"
+                            title="Reset unseen-first smart shuffle memory">
+                            <span id="menuResetSeenLabel">Reset Seen</span>
+                        </button>
+                    </div>
+                    <button id="syncGSheetsBtn" type="button" onclick="syncFromGoogleSheet()"
+                        class="w-full py-2 px-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-800 active:scale-95 transition-all shadow-2xs"
+                        title="Sync live questions directly from the master Google Sheet">
+                        <i id="syncGSheetsIcon" data-lucide="cloud-download" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span id="syncGSheetsLabel">Sync from Google Sheet</span>
+                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="exportQuestionsToCSV()"
+                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all"
+                            title="Export questions as CSV file">
+                            <i data-lucide="download" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span>Export CSV</span>
+                        </button>
+                        <button onclick="document.getElementById('csvFileInput').click()"
+                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all"
+                            title="Import questions from CSV file">
+                            <i data-lucide="upload" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span>Import CSV</span>
+                        </button>
+                    </div>
+                    <input type="file" id="csvFileInput" accept=".csv" class="hidden"
+                        onchange="importQuestionsFromCSV(event)">
+                    <button id="menuResetDeckBtn" onclick="resetCustomQuestions()"
+                        class="hidden w-full py-1.5 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-700 active:scale-95 transition-all"
+                        title="Restore default built-in questions">
+                        <i data-lucide="refresh-cw" class="w-3 h-3 text-[#06b6d4]"></i>
+                        <span id="menuResetDeckLabel">Restore Default Deck</span>
+                    </button>
+                </div>
+
+                <!-- Version Info in Drawer -->
+                <div
+                    class="pt-1 text-center text-[10px] text-slate-400 font-mono flex items-center justify-center gap-1.5">
+                    <span>Disney Expansion Pack</span>
+                    <span class="text-slate-400 font-medium">v1.11.7</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ONBOARDING WIZARD (WHITE BACKGROUND WITH #06b6d4 HIGHLIGHTS) ================= -->
+    <div id="wizardModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-6 text-slate-800 shadow-2xl relative max-h-[92vh] flex flex-col justify-between overflow-hidden">
+
+            <!-- STEP 1: Number of Players (Single Digit Only) -->
+            <div id="wizardStep1" class="space-y-5">
+                <div class="text-center space-y-1">
+                    <h2 id="wizPlayerTitle"
+                        class="text-2xl font-black font-game uppercase tracking-wide text-slate-900">
+                        Player Selection
+                    </h2>
+                    <p id="wizPlayerSubtitle" class="text-xs text-slate-500">How many players or teams are playing
+                        today?</p>
+                </div>
+
+                <!-- 1 to 6 Player Grid (Single Digits Only) -->
+                <div class="grid grid-cols-3 gap-3 py-3">
+                    <button type="button" onclick="selectPlayerCount(1)"
+                        class="player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700">
+                        <span class="text-2xl font-black font-game">1</span>
+                    </button>
+                    <button type="button" onclick="selectPlayerCount(2)"
+                        class="player-count-btn h-16 rounded-2xl border-2 border-[#06b6d4] bg-[#06b6d4]/15 flex items-center justify-center active:scale-95 transition-all text-[#06b6d4]">
+                        <span class="text-2xl font-black font-game">2</span>
+                    </button>
+                    <button type="button" onclick="selectPlayerCount(3)"
+                        class="player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700">
+                        <span class="text-2xl font-black font-game">3</span>
+                    </button>
+                    <button type="button" onclick="selectPlayerCount(4)"
+                        class="player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700">
+                        <span class="text-2xl font-black font-game">4</span>
+                    </button>
+                    <button type="button" onclick="selectPlayerCount(5)"
+                        class="player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700">
+                        <span class="text-2xl font-black font-game">5</span>
+                    </button>
+                    <button type="button" onclick="selectPlayerCount(6)"
+                        class="player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700">
+                        <span class="text-2xl font-black font-game">6</span>
+                    </button>
+                </div>
+
+                <button onclick="goToWizardStep(2)"
+                    class="w-full py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all flex items-center justify-center">
+                    <span id="wizStep1NextBtn">NEXT</span>
+                </button>
+            </div>
+
+            <!-- STEP 2: Team Name & Colour Customizer (Auto-Saved) -->
+            <div id="wizardStep2" class="space-y-4 hidden flex-1 flex flex-col justify-between overflow-hidden">
+                <div class="text-center space-y-1 flex-none">
+                    <h2 id="wizTeamTitle" class="text-2xl font-black font-game uppercase tracking-wide text-slate-900">
+                        Player Setup
+                    </h2>
+                    <p id="wizTeamSubtitle" class="text-xs text-slate-500">Edit player names and choose your colours</p>
+                </div>
+
+                <!-- Scrollable Player List -->
+                <div id="wizardTeamsList" class="flex-1 overflow-y-auto space-y-3 pr-1 py-1 no-scrollbar">
+                    <!-- Injected dynamically via JS -->
+                </div>
+
+                <div class="pt-2 flex items-center gap-2 flex-none">
+                    <button onclick="goToWizardStep(1)"
+                        class="w-1/3 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs uppercase font-game">
+                        <span id="wizStep2BackBtn">Back</span>
+                    </button>
+                    <button onclick="goToWizardStep(3)"
+                        class="w-2/3 py-3 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-xs uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                        <span id="wizStep2NextBtn">Confirm & Continue</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Category / Theme Selector (Multi-Select with Studio Logos & Counts) -->
+            <div id="wizardStep3" class="space-y-3 hidden flex-1 flex flex-col justify-between overflow-hidden">
+                <div class="text-center space-y-0.5 flex-none">
+                    <h2 id="wizThemeTitle" class="text-2xl font-black font-game uppercase tracking-wide text-slate-900">
+                        Choose Expansion
+                    </h2>
+                    <p id="wizThemeSubtitle" class="text-xs text-slate-500">Select one or more categories for this match
+                    </p>
+                </div>
+
+                <div class="space-y-2 py-1 flex-1 overflow-y-auto no-scrollbar pr-0.5">
+                    <button type="button" data-deck="all" onclick="pickWizardDeck('all')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border-2 border-[#06b6d4] bg-[#06b6d4]/10 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/silhouettes/mickey_silhouette.svg" alt="All" class="max-h-7 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-all">All</p>
+                                    <span id="deckCount-all" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">81</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate" id="wizDeckSub-all">Full expansion deck (all studios)</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-[#06b6d4] font-bold text-lg flex-none">●</span>
+                    </button>
+
+                    <button type="button" data-deck="disneychannel" onclick="pickWizardDeck('disneychannel')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/disney_channel.svg" alt="Disney Channel" class="max-h-7 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-disneychannel">Disney Channel</p>
+                                    <span id="deckCount-disneychannel" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">26</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate">Descendants, Zombies, Vampirina, Electric Bloom</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
+                    </button>
+
+                    <button type="button" data-deck="classic" onclick="pickWizardDeck('classic')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/walt_disney_animation_studios.svg" alt="Walt Disney Animation" class="max-h-7 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-classic">Walt Disney Animation</p>
+                                    <span id="deckCount-classic" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">16</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate">Encanto, Moana, Frozen II, Wish, Zootopia</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
+                    </button>
+
+                    <button type="button" data-deck="pixar" onclick="pickWizardDeck('pixar')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1.5">
+                                <img src="assets/logos/pixar.svg" alt="Pixar" class="max-h-6 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-pixar">Pixar Animation</p>
+                                    <span id="deckCount-pixar" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">17</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate">Inside Out 2, Turning Red, Elemental, Luca, Coco</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
+                    </button>
+
+                    <button type="button" data-deck="lucasfilm" onclick="pickWizardDeck('lucasfilm')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/lucasfilm.svg" alt="Lucasfilm" class="max-h-6 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-lucasfilm">Lucasfilm</p>
+                                    <span id="deckCount-lucasfilm" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">10</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate">Star Wars, The Mandalorian, Ahsoka</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
+                    </button>
+
+                    <button type="button" data-deck="marvel" onclick="pickWizardDeck('marvel')"
+                        class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/marvel_studios.svg" alt="Marvel Studios" class="max-h-6 max-w-full object-contain" />
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-marvel">Marvel Studios</p>
+                                    <span id="deckCount-marvel" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">12</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate">Captain America, Black Panther, Loki, Spider-Man</p>
+                            </div>
+                        </div>
+                        <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
+                    </button>
+                </div>
+
+                <!-- Match Rules Bar: Winning Score Target & 30s Timer Toggle -->
+                <div class="pt-1.5 pb-1 border-t border-slate-200/80 space-y-2 flex-none">
+                    <div class="flex items-center justify-between gap-2">
+                        <span id="wizTargetScoreLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Winning Target</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" data-target="5" onclick="setTargetScore(5)"
+                                class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">5</button>
+                            <button type="button" data-target="10" onclick="setTargetScore(10)"
+                                class="target-score-btn px-2.5 py-1 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all">10</button>
+                            <button type="button" data-target="15" onclick="setTargetScore(15)"
+                                class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">15</button>
+                            <button type="button" data-target="0" onclick="setTargetScore(0)"
+                                class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all" title="Endless Free Play">∞</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="timer" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span id="wizTimerLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">30s Round Timer</span>
+                        </div>
+                        <button id="wizTimerToggleBtn" type="button" onclick="toggleRoundTimer()"
+                            class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
+                            role="switch" aria-checked="false" aria-label="Toggle 30s Round Timer">
+                            <span id="wizTimerToggleThumb"
+                                class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="volume-2" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span id="wizVoiceLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Auto Read-Aloud</span>
+                        </div>
+                        <button id="wizVoiceToggleBtn" type="button" onclick="toggleAutoReadAloud()"
+                            class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
+                            role="switch" aria-checked="false" aria-label="Toggle Auto Read-Aloud">
+                            <span id="wizVoiceToggleThumb"
+                                class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1 flex-none">
+                    <button onclick="goToWizardStep(2)"
+                        class="w-1/3 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs uppercase font-game">
+                        <span id="wizStep3BackBtn">Back</span>
+                    </button>
+                    <button onclick="startGameFromWizard()"
+                        class="w-2/3 py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-lg shadow-cyan-500/25 active:scale-95 transition-all">
+                        <span id="wizStartGameBtn">Start Game!</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= WINNER CELEBRATION MODAL ================= -->
+    <div id="winnerModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-sm bg-white border border-slate-200/90 rounded-3xl p-6 text-slate-800 shadow-2xl text-center space-y-5">
+            <div class="mx-auto w-16 h-16 rounded-2xl bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-500 shadow-sm">
+                <i data-lucide="trophy" class="w-9 h-9"></i>
+            </div>
+            <div class="space-y-1.5">
+                <h2 id="winnerModalTitle" class="text-2xl font-black font-game uppercase tracking-wide text-slate-900">
+                    Winner!
+                </h2>
+                <p id="winnerModalSubtitle" class="text-sm font-semibold text-slate-600">
+                    Reached 10 points and won the match!
+                </p>
+            </div>
+            <div id="winnerTeamsBadges" class="flex flex-wrap items-center justify-center gap-2 py-1">
+                <!-- Winner badges injected via JS -->
+            </div>
+            <div class="space-y-2 pt-1">
+                <button type="button" onclick="playAgainFromWinnerModal()"
+                    class="w-full py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-lg shadow-cyan-500/25 active:scale-95 transition-all">
+                    <span id="winnerPlayAgainBtn">Play Again</span>
+                </button>
+                <button type="button" onclick="keepPlayingFromWinnerModal()"
+                    class="w-full py-2.5 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs uppercase font-game transition-all">
+                    <span id="winnerKeepPlayingBtn">Keep Playing</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HOW TO PLAY & OFFICIAL RULES GUIDE MODAL ================= -->
+    <div id="howToPlayModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="closeHowToPlayModal()">
+        <div class="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 text-slate-800 shadow-2xl max-h-[92vh] flex flex-col justify-between overflow-hidden"
+            onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 flex-none">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-[#06b6d4]/15 flex items-center justify-center text-[#06b6d4]">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 id="guideModalTitle" class="text-lg font-black font-game uppercase tracking-wide text-slate-900 leading-none">
+                            How to Play
+                        </h2>
+                        <p id="guideModalSubtitle" class="text-[11px] text-slate-500 mt-0.5">
+                            Quick Tabletop Guide & Official Rules
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeHowToPlayModal()"
+                    class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Guide Steps -->
+            <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 pr-0.5">
+                <!-- Step 1: 11 Colour Cards -->
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">1</span>
+                        <h3 id="guideStep1Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                            Hold Your 11 Colour Cards
+                        </h3>
+                    </div>
+                    <p id="guideStep1Desc" class="text-xs text-slate-600 leading-relaxed">
+                        Each player or team starts with a hand of the <strong>11 official Colour Brain cards</strong>:
+                    </p>
+                    <div id="guideSwatchesRow" class="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        <!-- 11 mini swatches injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Step 2: Question & Mickey Silhouette -->
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">2</span>
+                        <h3 id="guideStep2Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                            Check the Mickey Number & Pick Cards
+                        </h3>
+                    </div>
+                    <p id="guideStep2Desc" class="text-xs text-slate-600 leading-relaxed">
+                        Read the question aloud. The <strong>number inside the Mickey silhouette</strong> in the bottom-right corner tells you how many colour cards (1, 2, or 3) to play face-down on the table.
+                    </p>
+                </div>
+
+                <!-- Step 3: Flip & Mark Correct Teams -->
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">3</span>
+                        <h3 id="guideStep3Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                            Reveal, Flip & Tap Winners
+                        </h3>
+                    </div>
+                    <p id="guideStep3Desc" class="text-xs text-slate-600 leading-relaxed">
+                        Everyone reveals their physical colour cards simultaneously! Tap the card (or <strong>ANSWER</strong>) to flip it, tap the score boxes at the top for every team that got <strong>all</strong> required colours right, then press <strong>CONFIRM SCORES</strong>.
+                    </p>
+                </div>
+
+                <!-- Step 4: Scoring Rules -->
+                <div class="p-3 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-[#0891b2] text-white font-game font-black text-xs flex items-center justify-center flex-none">4</span>
+                        <h3 id="guideStep4Title" class="text-xs font-black font-game uppercase tracking-wider text-[#0891b2]">
+                            How Scoring Works (First to 10 Wins!)
+                        </h3>
+                    </div>
+                    <div id="guideStep4Desc" class="text-xs text-slate-700 space-y-1 leading-relaxed">
+                        <p>• <strong>Some teams right:</strong> Each correct team scores <strong>+1 pt</strong> (or wins the pot!).</p>
+                        <p>• <strong>Everyone right OR Nobody right:</strong> <strong>0 pts</strong> awarded! <em>(Tip: Enable <strong>Pot Rollover</strong> in the menu if you want 0-pt rounds to roll over into a jackpot!)</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer CTA -->
+            <div class="pt-3 border-t border-slate-200 flex-none">
+                <button type="button" onclick="closeHowToPlayModal()"
+                    class="w-full py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                    <span id="guideGotItBtn">Got It, Let's Play!</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Synthesizer & Deck Engine -->
+    <script>
+        // ================= SOUND SYNTHESIZER (Web Audio API) =================
+        let audioCtx = null;
+        let isSoundMuted = false;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playTone(freq, type = 'sine', duration = 0.08, gainVal = 0.15) {
+            if (isSoundMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) { }
+        }
+
+        function playCardFlipSfx() {
+            playTone(320, 'triangle', 0.06, 0.1);
+            setTimeout(() => playTone(540, 'sine', 0.08, 0.1), 35);
+        }
+
+        function playPointSfx() {
+            playTone(587.33, 'triangle', 0.1, 0.15);
+            setTimeout(() => playTone(880, 'sine', 0.18, 0.15), 60);
+        }
+
+        function playNeutralRoundSfx() {
+            playTone(350, 'sine', 0.1, 0.12);
+            setTimeout(() => playTone(300, 'sine', 0.14, 0.1), 80);
+        }
+
+        function playWinFanfare() {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => playTone(freq, 'triangle', 0.22, 0.2), idx * 110);
+            });
+        }
+
+        function toggleAudio() {
+            isSoundMuted = !isSoundMuted;
+            const t = I18N[currentLanguage] || I18N.en;
+            const label = document.getElementById('menuSoundLabel');
+            const icon = document.getElementById('menuSoundIcon');
+            if (isSoundMuted) {
+                label.innerText = t.muted;
+                icon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                label.innerText = t.enabled;
+                icon.setAttribute('data-lucide', 'volume-2');
+                playTone(600, 'sine', 0.08, 0.1);
+            }
+            lucide.createIcons();
+        }
+
+        // ================= FULLSCREEN AUTO-EXPAND ENGINE =================
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => { });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => { });
+                }
+            }
+        }
+
+        function autoExpandFullscreenOnInteraction() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => { });
+            }
+        }
+
+        // Automatically expand to fullscreen on first interaction (click / tap anywhere)
+        window.addEventListener('pointerdown', function initFullscreen() {
+            autoExpandFullscreenOnInteraction();
+        }, { once: true });
+
+        document.addEventListener('fullscreenchange', () => {
+            const icon = document.getElementById('fullscreenIcon');
+            if (icon) {
+                icon.setAttribute('data-lucide', document.fullscreenElement ? 'minimize' : 'maximize');
+                lucide.createIcons();
+            }
+        });
+
+        // ================= 11 OFFICIAL COLOUR BRAIN DISNEY COLOUR DEFINITIONS =================
+        const COLOR_TILES = [
+            { id: 'red', name_en: 'Red', name_es: 'Rojo', hex: '#E61C24', border: '#B8141A', textDark: false },
+            { id: 'orange', name_en: 'Orange', name_es: 'Naranja', hex: '#F58220', border: '#C96310', textDark: false },
+            { id: 'yellow', name_en: 'Yellow', name_es: 'Amarillo', hex: '#FFD100', border: '#CCA700', textDark: true },
+            { id: 'green', name_en: 'Green', name_es: 'Verde', hex: '#009E49', border: '#007A38', textDark: false },
+            { id: 'blue', name_en: 'Blue', name_es: 'Azul', hex: '#007AC2', border: '#005C94', textDark: false },
+            { id: 'purple', name_en: 'Purple', name_es: 'Morado', hex: '#702082', border: '#521660', textDark: false },
+            { id: 'pink', name_en: 'Pink', name_es: 'Rosa', hex: '#E83D84', border: '#B82463', textDark: false },
+            { id: 'brown', name_en: 'Brown', name_es: 'Marrón', hex: '#6B4423', border: '#4D3017', textDark: false },
+            { id: 'black', name_en: 'Black', name_es: 'Negro', hex: '#1A1818', border: '#363333', textDark: false },
+            { id: 'white', name_en: 'White', name_es: 'Blanco', hex: '#FFFFFF', border: '#CBD5E1', textDark: true },
+            { id: 'grey', name_en: 'Grey', name_es: 'Gris', hex: '#8E9398', border: '#6C7176', textDark: false }
+        ];
+
+        // Selectable team theme colours matching Disney palette
+        const TEAM_COLOUR_CHOICES = [
+            { hex: '#E61C24', bg: 'bg-[#E61C24]', name: 'Red' },
+            { hex: '#F58220', bg: 'bg-[#F58220]', name: 'Orange' },
+            { hex: '#FFD100', bg: 'bg-[#FFD100]', name: 'Yellow' },
+            { hex: '#009E49', bg: 'bg-[#009E49]', name: 'Green' },
+            { hex: '#007AC2', bg: 'bg-[#007AC2]', name: 'Blue' },
+            { hex: '#702082', bg: 'bg-[#702082]', name: 'Purple' },
+            { hex: '#E83D84', bg: 'bg-[#E83D84]', name: 'Pink' },
+            { hex: '#6B4423', bg: 'bg-[#6B4423]', name: 'Brown' },
+            { hex: '#1A1818', bg: 'bg-[#1A1818]', name: 'Black' },
+            { hex: '#8E9398', bg: 'bg-[#8E9398]', name: 'Grey' }
+        ];
+
+        // ================= MULTI-LANGUAGE DICTIONARY (EN & ES) =================
+        let currentLanguage = 'en';
+
+        const I18N = {
+            en: {
+                deckSubtitle: "Disney Expansion Pack",
+                prevBtn: "PREVIOUS",
+                nextBtn: "NEXT",
+                answer: "ANSWER",
+                question: "QUESTION",
+                scoreboard: "SCORES",
+                firstToTen: "First to 10 wins",
+                gameSettings: "Game Settings",
+                language: "Language",
+                expansionDeck: "Expansion Deck & Theme",
+                potRolloverTitle: "Pot Rollover",
+                potRolloverSubtitle: "House rule: 0-pt rounds roll over",
+                soundEffects: "Sound Effects",
+                enabled: "Enabled",
+                muted: "Muted",
+                rulesTitleOfficial: "How Points Work (Official Rules)",
+                rulesTitleRollover: "How Points Work (Pot Rollover)",
+                rule1: "• Everyone plays colour cards face down.",
+                rule2: "• Reveal simultaneously!",
+                rule3Official: "• <strong>Everyone right:</strong> 0 pts.",
+                rule4Official: "• <strong>Nobody right:</strong> 0 pts.",
+                rule5Official: "• <strong>Some right:</strong> 1 pt for each correct team.",
+                rule3Rollover: "• <strong>Everyone right:</strong> 0 pts (Pot rolls over!).",
+                rule4Rollover: "• <strong>Nobody right:</strong> 0 pts (Pot rolls over!).",
+                rule5Rollover: "• <strong>Some right:</strong> Correct teams win the pot!",
+                resetScores: "Reset Scores",
+                changePlayers: "Edit Teams & Colours",
+                newGameBtn: "New Game / Setup",
+                deckAll: "All",
+                deckDisney: "Walt Disney Animation",
+                deckDisneyChannel: "Disney Channel",
+                deckPixar: "Pixar Animation",
+                deckLucasfilm: "Lucasfilm",
+                deckMarvel: "Marvel Studios",
+                colourWordSingular: "COLOUR",
+                colourWordPlural: "COLOURS",
+                soloPlayer: "Solo Player",
+                wizPlayerTitle: "Player Selection",
+                wizPlayerSubtitle: "How many players or teams are playing today?",
+                wizTeamTitle: "Team Setup",
+                wizTeamSubtitle: "Edit player names and choose your team colours",
+                wizThemeTitle: "Choose Expansion",
+                wizThemeSubtitle: "Select one or more categories for this match",
+                wizNext: "NEXT",
+                wizBack: "Back",
+                wizStartGame: "Start Game!",
+                potPrefix: "Pot",
+                confirmScoresBtn: "CONFIRM SCORES",
+                resetDeckBtn: "Restore Default Deck",
+                winnerTitle: "Winner!",
+                winnerTitleTie: "Winners!",
+                winnerSubtitle: "Reached 10+ points and won the match!",
+                playAgainBtn: "Play Again (New Match)",
+                keepPlayingBtn: "Keep Playing",
+                howToPlayBtn: "How to Play & Rules",
+                guideModalTitle: "How to Play",
+                guideModalSubtitle: "Quick Tabletop Guide & Official Rules",
+                guideStep1Title: "Hold Your 11 Colour Cards",
+                guideStep1Desc: "Each player or team starts with a hand of the <strong>11 official Colour Brain cards</strong>:",
+                guideStep2Title: "Check the Mickey Number & Pick Cards",
+                guideStep2Desc: "Read the question aloud. The <strong>number inside the Mickey silhouette</strong> in the bottom-right corner tells you how many colour cards (1, 2, or 3) to play face-down on the table.",
+                guideStep3Title: "Reveal, Flip & Tap Winners",
+                guideStep3Desc: "Everyone reveals their physical colour cards simultaneously! Tap the card (or <strong>ANSWER</strong>) to flip it, tap the score boxes at the top for every team that got <strong>all</strong> required colours right, then press <strong>CONFIRM SCORES</strong>.",
+                guideStep4Title: "How Scoring Works (First to 10 Wins!)",
+                guideStep4Desc: "<p>• <strong>Some teams right:</strong> Each correct team scores <strong>+1 pt</strong> (or wins the pot!).</p><p>• <strong>Everyone right OR Nobody right:</strong> <strong>0 pts</strong> awarded! <em>(Tip: Enable <strong>Pot Rollover</strong> in the menu if you want 0-pt rounds to roll over into a jackpot!)</em></p>",
+                guideGotItBtn: "Got It, Let's Play!",
+                deckAllSub: "Full expansion deck (all studios)",
+                customMixSub: "Custom Expansion Mix",
+                cardsUnit: "cards",
+                winningTargetLabel: "Winning Target",
+                timerLabel: "30s Round Timer",
+                timerSubtitle: "Countdown clock per question",
+                firstToTarget: "First to {n}",
+                freePlayMode: "Free Play (∞)",
+                suddenDeathBadge: "⚡ SUDDEN DEATH",
+                suddenDeathTieMsg: "⚡ TIE AT {score} PTS! Sudden Death between {names}!",
+                suddenDeathContinueMsg: "⚡ STILL TIED! Next Sudden Death card for {names}!",
+                syncGSheetsBtn: "Sync from Google Sheet",
+                syncingGSheetsBtn: "Syncing...",
+                resetSeenBtn: "Reset Seen",
+                seenStatusFmt: "{seen}/{total} seen",
+                timesUpLabel: "TIME'S UP!",
+                voiceLabel: "Auto Read-Aloud",
+                voiceSubtitle: "Voice host reads cards (EN / ES)",
+                speakCardTooltip: "Read Card Aloud (S)"
+            },
+            es: {
+                deckSubtitle: "Pack de Expansión Disney",
+                prevBtn: "ANTERIOR",
+                nextBtn: "SIGUIENTE",
+                answer: "RESPUESTA",
+                question: "PREGUNTA",
+                scoreboard: "PUNTOS",
+                firstToTen: "Primero a 10 gana",
+                gameSettings: "Ajustes del Juego",
+                language: "Idioma",
+                expansionDeck: "Mazo de Expansión",
+                potRolloverTitle: "Bote Acumulado",
+                potRolloverSubtitle: "Regla casera: rondas con 0 pts se acumulan",
+                soundEffects: "Efectos de Sonido",
+                enabled: "Activado",
+                muted: "Silenciado",
+                rulesTitleOfficial: "Cómo Funcionan los Puntos (Reglas Oficiales)",
+                rulesTitleRollover: "Cómo Funcionan los Puntos (Bote Acumulado)",
+                rule1: "• Todos colocan sus cartas de color boca abajo.",
+                rule2: "• ¡Revelad las cartas a la vez!",
+                rule3Official: "• <strong>Si todos aciertan:</strong> 0 pts.",
+                rule4Official: "• <strong>Si nadie acierta:</strong> 0 pts.",
+                rule5Official: "• <strong>Si algunos aciertan:</strong> 1 pto para cada equipo.",
+                rule3Rollover: "• <strong>Si todos aciertan:</strong> 0 pts (¡El bote se acumula!).",
+                rule4Rollover: "• <strong>Si nadie acierta:</strong> 0 pts (¡El bote se acumula!).",
+                rule5Rollover: "• <strong>Si algunos aciertan:</strong> ¡Los que aciertan ganan el bote!",
+                resetScores: "Reiniciar Puntos",
+                changePlayers: "Editar Equipos y Colores",
+                newGameBtn: "Nueva Partida / Configurar",
+                deckAll: "Todos",
+                deckDisney: "Animación Walt Disney",
+                deckDisneyChannel: "Disney Channel",
+                deckPixar: "Animación Pixar",
+                deckLucasfilm: "Lucasfilm",
+                deckMarvel: "Marvel Studios",
+                colourWordSingular: "COLOR",
+                colourWordPlural: "COLORES",
+                soloPlayer: "Jugador en Solitario",
+                wizPlayerTitle: "Selección de Jugadores",
+                wizPlayerSubtitle: "¿Cuántos jugadores o equipos juegan hoy?",
+                wizTeamTitle: "Configurar Equipos",
+                wizTeamSubtitle: "Personaliza tus nombres y elige tus colores",
+                wizThemeTitle: "Elegir Expansión",
+                wizThemeSubtitle: "Selecciona una o más categorías para la partida",
+                wizNext: "SIGUIENTE",
+                wizBack: "Atrás",
+                wizStartGame: "¡Empezar Juego!",
+                potPrefix: "Bote",
+                confirmScoresBtn: "CONFIRMAR PUNTOS",
+                resetDeckBtn: "Restaurar Mazo Original",
+                winnerTitle: "¡Ganador!",
+                winnerTitleTie: "¡Ganadores!",
+                winnerSubtitle: "¡Alcanzó la puntuación objetivo y ganó la partida!",
+                playAgainBtn: "Jugar de Nuevo",
+                keepPlayingBtn: "Seguir Jugando",
+                howToPlayBtn: "Cómo Jugar y Reglas",
+                guideModalTitle: "Cómo Jugar",
+                guideModalSubtitle: "Guía Rápida de Mesa y Reglas Oficiales",
+                guideStep1Title: "Tus 11 Cartas de Color",
+                guideStep1Desc: "Cada jugador o equipo comienza con las <strong>11 cartas oficiales de color de Colour Brain</strong> en la mano:",
+                guideStep2Title: "Mira el Número de Mickey y Elige Cartas",
+                guideStep2Desc: "Lee la pregunta en voz alta. El <strong>número dentro de la silueta de Mickey</strong> en la esquina inferior derecha indica cuántas cartas de color (1, 2 o 3) debes colocar boca abajo en la mesa.",
+                guideStep3Title: "Revela, Gira y Marca Aciertos",
+                guideStep3Desc: "¡Todos revelan sus cartas de color a la vez! Toca la carta (o <strong>RESPUESTA</strong>) para girarla, toca los marcadores superiores de cada equipo que acertó <strong>todos</strong> los colores y pulsa <strong>CONFIRMAR PUNTOS</strong>.",
+                guideStep4Title: "Cómo Funcionan los Puntos (¡Primero a 10 Gana!)",
+                guideStep4Desc: "<p>• <strong>Si algunos aciertan:</strong> Cada equipo que acierta gana <strong>+1 pto</strong> (¡o se lleva el bote!).</p><p>• <strong>Si todos aciertan O nadie acierta:</strong> ¡<strong>0 ptos</strong>! <em>(Consejo: Activa <strong>Bote Acumulado</strong> en el menú para acumular los puntos de rondas sin ganador).</em></p>",
+                guideGotItBtn: "¡Entendido, a Jugar!",
+                deckAllSub: "Mazo completo (todos los estudios)",
+                customMixSub: "Mezcla Personalizada",
+                cardsUnit: "cartas",
+                winningTargetLabel: "Meta para Ganar",
+                timerLabel: "Reloj de 30s",
+                timerSubtitle: "Cuenta atrás por pregunta",
+                firstToTarget: "Primero a {n}",
+                freePlayMode: "Juego Libre (∞)",
+                suddenDeathBadge: "⚡ MUERTE SÚBITA",
+                suddenDeathTieMsg: "⚡ ¡EMPATE A {score} PTOS! ¡Muerte Súbita entre {names}!",
+                suddenDeathContinueMsg: "⚡ ¡SIGUE EL EMPATE! ¡Siguiente carta de Muerte Súbita para {names}!",
+                syncGSheetsBtn: "Sincronizar con Google Sheet",
+                syncingGSheetsBtn: "Sincronizando...",
+                resetSeenBtn: "Reiniciar Vistas",
+                seenStatusFmt: "{seen}/{total} vistas",
+                timesUpLabel: "¡TIEMPO!",
+                voiceLabel: "Lectura por Voz",
+                voiceSubtitle: "El presentador lee las cartas (EN / ES)",
+                speakCardTooltip: "Leer Carta en Voz Alta (S)"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            playTone(550, 'sine', 0.05, 0.08);
+
+            const enBtn = document.getElementById('langBtn-en');
+            const esBtn = document.getElementById('langBtn-es');
+            if (enBtn && esBtn) {
+                if (lang === 'en') {
+                    enBtn.className = "p-1.5 rounded-xl border-2 border-[#06b6d4] bg-[#06b6d4]/15 opacity-100 shadow-sm active:scale-95 transition-all";
+                    esBtn.className = "p-1.5 rounded-xl border-2 border-transparent hover:bg-white opacity-50 hover:opacity-100 active:scale-95 transition-all";
+                } else {
+                    esBtn.className = "p-1.5 rounded-xl border-2 border-[#06b6d4] bg-[#06b6d4]/15 opacity-100 shadow-sm active:scale-95 transition-all";
+                    enBtn.className = "p-1.5 rounded-xl border-2 border-transparent hover:bg-white opacity-50 hover:opacity-100 active:scale-95 transition-all";
+                }
+            }
+
+            applyLanguageToUI();
+            renderCurrentCard();
+            renderLiveScoreboard();
+            renderWizardTeamsList();
+        }
+
+        function applyLanguageToUI() {
+            const t = I18N[currentLanguage] || I18N.en;
+
+            const deckSub = document.getElementById('deckSubtitle');
+            if (deckSub) {
+                if (currentDeckKey === 'classic' || currentDeckKey === 'disney') deckSub.innerText = t.deckDisney;
+                else if (currentDeckKey === 'disneychannel') deckSub.innerText = t.deckDisneyChannel;
+                else if (currentDeckKey === 'pixar') deckSub.innerText = t.deckPixar;
+                else if (currentDeckKey === 'lucasfilm') deckSub.innerText = t.deckLucasfilm;
+                else if (currentDeckKey === 'marvel') deckSub.innerText = t.deckMarvel;
+                else deckSub.innerText = t.deckSubtitle;
+            }
+
+            const prevLabel = document.getElementById('prevBtnLabel');
+            if (prevLabel) prevLabel.innerText = t.prevBtn;
+
+            const nextLabel = document.getElementById('nextBtnLabel');
+            if (nextLabel) nextLabel.innerText = t.nextBtn;
+
+            const flipBtnLabel = document.getElementById('flipBtnLabel');
+            if (flipBtnLabel) flipBtnLabel.innerText = isFlipped ? t.question : t.answer;
+
+            const scTitle = document.getElementById('scoreboardTitle');
+            if (scTitle) scTitle.innerText = t.scoreboard;
+
+            const scSub = document.getElementById('scoreboardSubtitle');
+            if (scSub) scSub.innerText = t.firstToTen;
+
+            const menuTitle = document.getElementById('menuTitle');
+            if (menuTitle) menuTitle.innerText = t.gameSettings;
+
+            const menuLang = document.getElementById('menuLanguageLabel');
+            if (menuLang) menuLang.innerText = t.language;
+
+            const potTitle = document.getElementById('menuPotTitle');
+            if (potTitle) potTitle.innerText = t.potRolloverTitle;
+
+            const potSub = document.getElementById('menuPotSubtitle');
+            if (potSub) potSub.innerText = t.potRolloverSubtitle;
+
+            // Wizard Category Labels
+            const optAll = document.getElementById('wizDeckOpt-all');
+            if (optAll) optAll.innerText = t.deckAll;
+
+            const optDc = document.getElementById('wizDeckOpt-disneychannel');
+            if (optDc) optDc.innerText = t.deckDisneyChannel;
+
+            const optClassic = document.getElementById('wizDeckOpt-classic');
+            if (optClassic) optClassic.innerText = t.deckDisney;
+
+            const optPixar = document.getElementById('wizDeckOpt-pixar');
+            if (optPixar) optPixar.innerText = t.deckPixar;
+
+            const optLucas = document.getElementById('wizDeckOpt-lucasfilm');
+            if (optLucas) optLucas.innerText = t.deckLucasfilm;
+
+            const optMarvel = document.getElementById('wizDeckOpt-marvel');
+            if (optMarvel) optMarvel.innerText = t.deckMarvel;
+
+            const sndTitle = document.getElementById('menuSoundTitle');
+            if (sndTitle) sndTitle.innerText = t.soundEffects;
+
+            const sndLbl = document.getElementById('menuSoundLabel');
+            if (sndLbl) sndLbl.innerText = isSoundMuted ? t.muted : t.enabled;
+
+            updateRulesCardUI();
+
+            const newGameLbl = document.getElementById('menuNewGameLabel');
+            if (newGameLbl) newGameLbl.innerText = t.newGameBtn;
+
+            const chgPlayers = document.getElementById('menuChangePlayersBtn');
+            if (chgPlayers) chgPlayers.innerText = t.changePlayers;
+
+            const rstScores = document.getElementById('menuResetScoresBtn');
+            if (rstScores) rstScores.innerText = t.resetScores;
+
+            // Wizard labels
+            const wpTitle = document.getElementById('wizPlayerTitle');
+            if (wpTitle) wpTitle.innerText = t.wizPlayerTitle;
+
+            const wpSub = document.getElementById('wizPlayerSubtitle');
+            if (wpSub) wpSub.innerText = t.wizPlayerSubtitle;
+
+            const wtTitle = document.getElementById('wizTeamTitle');
+            if (wtTitle) wtTitle.innerText = t.wizTeamTitle;
+
+            const wtSub = document.getElementById('wizTeamSubtitle');
+            if (wtSub) wtSub.innerText = t.wizTeamSubtitle;
+
+            const wthTitle = document.getElementById('wizThemeTitle');
+            if (wthTitle) wthTitle.innerText = t.wizThemeTitle;
+
+            const wthSub = document.getElementById('wizThemeSubtitle');
+            if (wthSub) wthSub.innerText = t.wizThemeSubtitle;
+
+            const wNext = document.getElementById('wizStep1NextBtn');
+            if (wNext) wNext.innerText = t.wizNext;
+
+            const wBack2 = document.getElementById('wizStep2BackBtn');
+            if (wBack2) wBack2.innerText = t.wizBack;
+
+            const wBack3 = document.getElementById('wizStep3BackBtn');
+            if (wBack3) wBack3.innerText = t.wizBack;
+
+            const wStart = document.getElementById('wizStartGameBtn');
+            if (wStart) wStart.innerText = t.wizStartGame;
+
+            const rstDeckLbl = document.getElementById('menuResetDeckLabel');
+            if (rstDeckLbl) rstDeckLbl.innerText = t.resetDeckBtn;
+
+            const winPlayAgain = document.getElementById('winnerPlayAgainBtn');
+            if (winPlayAgain) winPlayAgain.innerText = t.playAgainBtn;
+
+            const winKeepPlaying = document.getElementById('winnerKeepPlayingBtn');
+            if (winKeepPlaying) winKeepPlaying.innerText = t.keepPlayingBtn;
+
+            const howToPlayLbl = document.getElementById('menuHowToPlayLabel');
+            if (howToPlayLbl) howToPlayLbl.innerText = t.howToPlayBtn;
+
+            const deckAllSub = document.getElementById('wizDeckSub-all');
+            if (deckAllSub) deckAllSub.innerText = t.deckAllSub;
+
+            // Guide Modal labels
+            const gTitle = document.getElementById('guideModalTitle');
+            if (gTitle) gTitle.innerText = t.guideModalTitle;
+            const gSub = document.getElementById('guideModalSubtitle');
+            if (gSub) gSub.innerText = t.guideModalSubtitle;
+            const gS1T = document.getElementById('guideStep1Title');
+            if (gS1T) gS1T.innerText = t.guideStep1Title;
+            const gS1D = document.getElementById('guideStep1Desc');
+            if (gS1D) gS1D.innerHTML = t.guideStep1Desc;
+            const gS2T = document.getElementById('guideStep2Title');
+            if (gS2T) gS2T.innerText = t.guideStep2Title;
+            const gS2D = document.getElementById('guideStep2Desc');
+            if (gS2D) gS2D.innerHTML = t.guideStep2Desc;
+            const gS3T = document.getElementById('guideStep3Title');
+            if (gS3T) gS3T.innerText = t.guideStep3Title;
+            const gS3D = document.getElementById('guideStep3Desc');
+            if (gS3D) gS3D.innerHTML = t.guideStep3Desc;
+            const gS4T = document.getElementById('guideStep4Title');
+            if (gS4T) gS4T.innerText = t.guideStep4Title;
+            const gS4D = document.getElementById('guideStep4Desc');
+            if (gS4D) gS4D.innerHTML = t.guideStep4Desc;
+            const gGotIt = document.getElementById('guideGotItBtn');
+            if (gGotIt) gGotIt.innerText = t.guideGotItBtn;
+
+            renderGuideSwatches();
+            updateDeckCountsAndSelectionUI();
+            updatePotBadge();
+            updatePotMenuToggleUI();
+            updateTargetScoreUI();
+            updateRoundTimerUI();
+            updateSuddenDeathBadgeUI();
+            updateSeenCardsStatusUI();
+
+            const menuTimerTitle = document.getElementById('menuTimerTitle');
+            if (menuTimerTitle) menuTimerTitle.innerText = t.timerLabel;
+            const menuTimerSub = document.getElementById('menuTimerSubtitle');
+            if (menuTimerSub) menuTimerSub.innerText = t.timerSubtitle;
+            const wizTimerLbl = document.getElementById('wizTimerLabel');
+            if (wizTimerLbl) wizTimerLbl.innerText = t.timerLabel;
+            const menuTargetLbl = document.getElementById('menuTargetScoreLabel');
+            if (menuTargetLbl) menuTargetLbl.innerText = t.winningTargetLabel;
+            const wizTargetLbl = document.getElementById('wizTargetScoreLabel');
+            if (wizTargetLbl) wizTargetLbl.innerText = t.winningTargetLabel;
+            const syncLbl = document.getElementById('syncGSheetsLabel');
+            if (syncLbl) syncLbl.innerText = t.syncGSheetsBtn;
+            const rstSeenLbl = document.getElementById('menuResetSeenLabel');
+            if (rstSeenLbl) rstSeenLbl.innerText = t.resetSeenBtn;
+            const menuVoiceTitle = document.getElementById('menuVoiceTitle');
+            if (menuVoiceTitle) menuVoiceTitle.innerText = t.voiceLabel;
+            const menuVoiceSub = document.getElementById('menuVoiceSubtitle');
+            if (menuVoiceSub) menuVoiceSub.innerText = t.voiceSubtitle;
+            const wizVoiceLbl = document.getElementById('wizVoiceLabel');
+            if (wizVoiceLbl) wizVoiceLbl.innerText = t.voiceLabel;
+            const topSpk = document.getElementById('topSpeakBtn');
+            if (topSpk) topSpk.title = t.speakCardTooltip;
+            updateAutoReadAloudUI();
+        }
+
+        function updateRulesCardUI() {
+            const t = I18N[currentLanguage] || I18N.en;
+            const rulesTitle = document.getElementById('menuRulesTitle');
+            const rList = document.getElementById('menuRulesList');
+
+            if (rulesTitle) {
+                rulesTitle.innerText = isPotRolloverEnabled ? t.rulesTitleRollover : t.rulesTitleOfficial;
+            }
+
+            if (rList) {
+                if (isPotRolloverEnabled) {
+                    rList.innerHTML = `
+            <p>${t.rule1}</p>
+            <p>${t.rule2}</p>
+            <p>${t.rule3Rollover}</p>
+            <p>${t.rule4Rollover}</p>
+            <p>${t.rule5Rollover}</p>
+          `;
+                } else {
+                    rList.innerHTML = `
+            <p>${t.rule1}</p>
+            <p>${t.rule2}</p>
+            <p>${t.rule3Official}</p>
+            <p>${t.rule4Official}</p>
+            <p>${t.rule5Official}</p>
+          `;
+                }
+            }
+        }
+
+        // ================= TRIVIA QUESTIONS DATABASE REFERENCE =================
+        // Initialized from external questions.js or custom localStorage cache
+        const DEFAULT_QUESTIONS_MASTER = (typeof window !== 'undefined' && Array.isArray(window.QUESTIONS_MASTER))
+            ? window.QUESTIONS_MASTER.map(q => ({ ...q }))
+            : [];
+        let QUESTIONS_MASTER = DEFAULT_QUESTIONS_MASTER.map(q => ({ ...q }));
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ================= STATE MANAGEMENT =================
+        const APP_VERSION = 'v1.11.7';
+        const ALL_CATEGORY_KEYS = ['disneychannel', 'classic', 'pixar', 'lucasfilm', 'marvel'];
+        let currentDeckKey = 'all';
+        let selectedWizardDecks = ['all'];
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let isFlipped = false;
+        let selectedPlayerCount = 2;
+        let temporaryWizardDeck = 'all';
+
+        // Auto-advance timer reference
+        let autoAdvanceTimer = null;
+
+        // Pot rollover rule state (Default: false / Standard game rules)
+        let isPotRolloverEnabled = false;
+        let pot = 1;
+
+        // Configurable Target Score (5, 10, 15, or 0 for Endless Free Play)
+        let targetScore = 10;
+
+        // Optional 30s Round Timer state
+        let isRoundTimerEnabled = false;
+        let roundTimerSeconds = 30;
+        let roundTimerInterval = null;
+
+        // Voice Read-Aloud (Web Speech API TTS) state
+        let isAutoReadAloudEnabled = false;
+        let isCurrentlySpeaking = false;
+
+        // Sudden Death Tie-Breaker state
+        let isSuddenDeath = false;
+        let suddenDeathTeamIds = [];
+
+        // Unseen-First Smart Shuffle state (persisted in localStorage)
+        let seenCardIds = new Set();
+
+        // Master Google Sheet ID for Live Sync
+        const MASTER_GOOGLE_SHEET_ID = '14GnJvQRl74nkzaIuPekk7-UJrByNrAW9DcK_l8GHnO8';
+        const MASTER_GOOGLE_SHEET_GID = '1632021490';
+
+        // Round scoring state
+        let roundChoices = {}; // { [teamId]: 'correct' | 'wrong' }
+        let roundConfirmed = false;
+        let roundFeedbackMessage = '';
+
+        let teams = [
+            { id: 1, name: 'Vampirina', score: 0, color: 'bg-[#702082]', hex: '#702082' },
+            { id: 2, name: 'Stitch', score: 0, color: 'bg-[#007AC2]', hex: '#007AC2' }
+        ];
+
+        const TEAM_PRESETS = [
+            { name: 'Mickey', color: 'bg-[#E61C24]', hex: '#E61C24' },
+            { name: 'Stitch', color: 'bg-[#007AC2]', hex: '#007AC2' },
+            { name: 'Simba', color: 'bg-[#FFD100]', hex: '#FFD100' },
+            { name: 'Grogu', color: 'bg-[#009E49]', hex: '#009E49' },
+            { name: 'Vampirina', color: 'bg-[#702082]', hex: '#702082' },
+            { name: 'Elsa', color: 'bg-[#8E9398]', hex: '#8E9398' }
+        ];
+
+        function syncPlayerThemeColor() {
+            const themeHex = (teams.length > 0 && teams[0].hex) ? teams[0].hex : '#702082';
+            document.documentElement.style.setProperty('--player-theme-color', themeHex);
+        }
+
+        function saveTeamsToStorage() {
+            try {
+                localStorage.setItem('colourbrain_disney_teams', JSON.stringify(teams));
+            } catch (e) { }
+        }
+
+        function loadTeamsFromStorage() {
+            try {
+                const stored = localStorage.getItem('colourbrain_disney_teams');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        const legacyMap = {
+                            '#06b6d4': '#702082', '#ef4444': '#E61C24', '#2563eb': '#007AC2',
+                            '#16a34a': '#009E49', '#facc15': '#FFD100', '#f59e0b': '#FFD100',
+                            '#ea580c': '#F58220', '#8b5cf6': '#702082', '#9333ea': '#702082',
+                            '#ec4899': '#E83D84', '#854d0e': '#6B4423', '#0f172a': '#1A1818'
+                        };
+                        teams = parsed.map(t => ({
+                            ...t,
+                            hex: legacyMap[t.hex] || t.hex,
+                            color: legacyMap[t.hex] ? `bg-[${legacyMap[t.hex]}]` : t.color
+                        }));
+                        selectedPlayerCount = teams.length;
+                        syncPlayerThemeColor();
+                    }
+                }
+            } catch (e) { }
+        }
+
+        function saveSettingsToStorage() {
+            try {
+                localStorage.setItem('colourbrain_pot_rollover_enabled', isPotRolloverEnabled ? 'true' : 'false');
+                localStorage.setItem('colourbrain_target_score', String(targetScore));
+                localStorage.setItem('colourbrain_round_timer_enabled', isRoundTimerEnabled ? 'true' : 'false');
+                localStorage.setItem('colourbrain_auto_read_aloud', isAutoReadAloudEnabled ? 'true' : 'false');
+            } catch (e) { }
+        }
+
+        function loadSettingsFromStorage() {
+            try {
+                const storedRollover = localStorage.getItem('colourbrain_pot_rollover_enabled');
+                isPotRolloverEnabled = storedRollover === 'true';
+
+                const storedTarget = localStorage.getItem('colourbrain_target_score');
+                if (storedTarget !== null && !isNaN(parseInt(storedTarget, 10))) {
+                    targetScore = parseInt(storedTarget, 10);
+                } else {
+                    targetScore = 10;
+                }
+
+                const storedTimer = localStorage.getItem('colourbrain_round_timer_enabled');
+                isRoundTimerEnabled = storedTimer === 'true';
+
+                const storedVoice = localStorage.getItem('colourbrain_auto_read_aloud');
+                isAutoReadAloudEnabled = storedVoice === 'true';
+
+                const storedSeen = localStorage.getItem('colourbrain_seen_card_ids');
+                if (storedSeen) {
+                    const parsedSeen = JSON.parse(storedSeen);
+                    if (Array.isArray(parsedSeen)) {
+                        seenCardIds = new Set(parsedSeen.map(Number).filter(Boolean));
+                    }
+                }
+            } catch (e) {
+                isPotRolloverEnabled = false;
+                targetScore = 10;
+                isRoundTimerEnabled = false;
+                isAutoReadAloudEnabled = false;
+            }
+        }
+
+        function saveSeenCardsToStorage() {
+            try {
+                localStorage.setItem('colourbrain_seen_card_ids', JSON.stringify(Array.from(seenCardIds)));
+            } catch (e) { }
+            updateSeenCardsStatusUI();
+        }
+
+        function markCurrentCardAsSeen() {
+            if (!activeQuestions || activeQuestions.length === 0) return;
+            const currentQ = activeQuestions[currentIndex];
+            if (currentQ && currentQ.id) {
+                seenCardIds.add(Number(currentQ.id));
+                // Auto-reset cycle once all cards in the master deck have been seen
+                if (QUESTIONS_MASTER.length > 0 && seenCardIds.size >= QUESTIONS_MASTER.length) {
+                    seenCardIds.clear();
+                    seenCardIds.add(Number(currentQ.id));
+                }
+                saveSeenCardsToStorage();
+            }
+        }
+
+        function resetSeenCardsHistory() {
+            seenCardIds.clear();
+            saveSeenCardsToStorage();
+            playTone(540, 'sine', 0.06, 0.1);
+            setThemeAndDeck(selectedWizardDecks);
+        }
+
+        function updateSeenCardsStatusUI() {
+            const el = document.getElementById('menuSeenCardsStatus');
+            if (!el) return;
+            const t = I18N[currentLanguage] || I18N.en;
+            const total = QUESTIONS_MASTER.length || 81;
+            const seen = Math.min(seenCardIds.size, total);
+            el.innerText = (t.seenStatusFmt || '{seen}/{total} seen')
+                .replace('{seen}', seen)
+                .replace('{total}', total);
+        }
+
+        // ================= CONFIGURABLE TARGET SCORE =================
+        function setTargetScore(scoreVal) {
+            targetScore = Number(scoreVal);
+            playTone(580, 'sine', 0.05, 0.09);
+            // Clear sudden death if switching to endless or raising target above current scores
+            if (targetScore === 0 || teams.every(t => t.score < targetScore)) {
+                isSuddenDeath = false;
+                suddenDeathTeamIds = [];
+            }
+            saveSettingsToStorage();
+            updateTargetScoreUI();
+            updateSuddenDeathBadgeUI();
+            renderLiveScoreboard();
+        }
+
+        function updateTargetScoreUI() {
+            const t = I18N[currentLanguage] || I18N.en;
+            const isEs = currentLanguage === 'es';
+            document.querySelectorAll('.target-score-btn').forEach(btn => {
+                const val = parseInt(btn.getAttribute('data-target'), 10);
+                const isSelected = val === targetScore;
+                const isMenuBtn = btn.textContent.includes('pts') || btn.textContent.includes('ptos') || btn.textContent.includes('Free') || btn.textContent.includes('Libre');
+                if (isMenuBtn) {
+                    if (val === 0) btn.innerText = isEs ? '∞ Libre' : '∞ Free';
+                    else btn.innerText = `${val} ${isEs ? 'ptos' : 'pts'}`;
+                    btn.className = isSelected
+                        ? "target-score-btn py-1.5 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all"
+                        : "target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all";
+                } else {
+                    btn.className = isSelected
+                        ? "target-score-btn px-2.5 py-1 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all"
+                        : "target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all";
+                }
+            });
+
+            const badge = document.getElementById('targetScoreBadge');
+            if (badge) {
+                badge.innerText = targetScore > 0
+                    ? (t.firstToTarget || 'First to {n}').replace('{n}', targetScore)
+                    : (t.freePlayMode || 'Free Play (∞)');
+            }
+        }
+
+        // ================= 30s OPTIONAL ROUND TIMER =================
+        function toggleRoundTimer() {
+            isRoundTimerEnabled = !isRoundTimerEnabled;
+            playTone(isRoundTimerEnabled ? 660 : 420, 'sine', 0.06, 0.1);
+            saveSettingsToStorage();
+            updateRoundTimerUI();
+            if (isRoundTimerEnabled && !isFlipped) {
+                startRoundTimer();
+            } else {
+                stopRoundTimer();
+            }
+        }
+
+        function updateRoundTimerUI() {
+            const menuBtn = document.getElementById('menuTimerToggleBtn');
+            const menuThumb = document.getElementById('menuTimerToggleThumb');
+            if (menuBtn && menuThumb) {
+                menuBtn.className = isRoundTimerEnabled
+                    ? "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-[#06b6d4]"
+                    : "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200";
+                menuThumb.className = isRoundTimerEnabled
+                    ? "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-5"
+                    : "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0";
+                menuBtn.setAttribute('aria-checked', isRoundTimerEnabled ? 'true' : 'false');
+            }
+
+            const wizBtn = document.getElementById('wizTimerToggleBtn');
+            const wizThumb = document.getElementById('wizTimerToggleThumb');
+            if (wizBtn && wizThumb) {
+                wizBtn.className = isRoundTimerEnabled
+                    ? "relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-[#06b6d4]"
+                    : "relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200";
+                wizThumb.className = isRoundTimerEnabled
+                    ? "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-4"
+                    : "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0";
+                wizBtn.setAttribute('aria-checked', isRoundTimerEnabled ? 'true' : 'false');
+            }
+
+            const badge = document.getElementById('roundTimerBadge');
+            if (badge) {
+                badge.classList.toggle('hidden', !isRoundTimerEnabled);
+            }
+        }
+
+        function stopRoundTimer() {
+            if (roundTimerInterval) {
+                clearInterval(roundTimerInterval);
+                roundTimerInterval = null;
+            }
+        }
+
+        function restartRoundTimer() {
+            if (!isRoundTimerEnabled) return;
+            playTone(520, 'sine', 0.04, 0.08);
+            startRoundTimer();
+        }
+
+        function startRoundTimer() {
+            stopRoundTimer();
+            const badge = document.getElementById('roundTimerBadge');
+            const textEl = document.getElementById('roundTimerText');
+            if (!isRoundTimerEnabled || !badge || !textEl) return;
+
+            badge.classList.remove('hidden');
+            roundTimerSeconds = 30;
+            renderRoundTimerBadgeState();
+
+            // Do not count down while wizard modal is open
+            const wizardModal = document.getElementById('wizardModal');
+            if (wizardModal && !wizardModal.classList.contains('hidden')) return;
+
+            roundTimerInterval = setInterval(() => {
+                if (isFlipped || roundConfirmed) {
+                    stopRoundTimer();
+                    return;
+                }
+                roundTimerSeconds = Math.max(0, roundTimerSeconds - 1);
+                renderRoundTimerBadgeState();
+
+                if (roundTimerSeconds > 0 && roundTimerSeconds <= 5) {
+                    playTone(740, 'sine', 0.04, 0.08);
+                } else if (roundTimerSeconds === 0) {
+                    stopRoundTimer();
+                    playTone(280, 'sawtooth', 0.25, 0.16);
+                    setTimeout(() => playTone(220, 'sawtooth', 0.35, 0.18), 180);
+                }
+            }, 1000);
+        }
+
+        function renderRoundTimerBadgeState() {
+            const badge = document.getElementById('roundTimerBadge');
+            const textEl = document.getElementById('roundTimerText');
+            if (!badge || !textEl) return;
+            const t = I18N[currentLanguage] || I18N.en;
+
+            if (roundTimerSeconds === 0) {
+                textEl.innerText = t.timesUpLabel || "TIME'S UP!";
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs flex items-center gap-1 animate-bounce";
+            } else if (roundTimerSeconds <= 5) {
+                textEl.innerText = `${roundTimerSeconds}s`;
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500/15 text-rose-700 border border-rose-500/40 shadow-2xs flex items-center gap-1 animate-pulse";
+            } else if (roundTimerSeconds <= 10) {
+                textEl.innerText = `${roundTimerSeconds}s`;
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-2xs flex items-center gap-1";
+            } else {
+                textEl.innerText = `${roundTimerSeconds}s`;
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1";
+            }
+        }
+
+        function updateSuddenDeathBadgeUI() {
+            const badge = document.getElementById('suddenDeathBadge');
+            if (!badge) return;
+            const t = I18N[currentLanguage] || I18N.en;
+            badge.innerText = t.suddenDeathBadge || '⚡ SUDDEN DEATH';
+            badge.classList.toggle('hidden', !isSuddenDeath);
+        }
+
+        // ================= VOICE READ-ALOUD (WEB SPEECH API TTS HOST) =================
+        function toggleAutoReadAloud() {
+            isAutoReadAloudEnabled = !isAutoReadAloudEnabled;
+            playTone(isAutoReadAloudEnabled ? 660 : 420, 'sine', 0.06, 0.1);
+            saveSettingsToStorage();
+            updateAutoReadAloudUI();
+            if (isAutoReadAloudEnabled) {
+                const wizardModal = document.getElementById('wizardModal');
+                if (!wizardModal || wizardModal.classList.contains('hidden')) {
+                    speakCurrentCard(true);
+                }
+            } else {
+                stopSpeech();
+            }
+        }
+
+        function updateAutoReadAloudUI() {
+            const menuBtn = document.getElementById('menuVoiceToggleBtn');
+            const menuThumb = document.getElementById('menuVoiceToggleThumb');
+            if (menuBtn && menuThumb) {
+                menuBtn.className = isAutoReadAloudEnabled
+                    ? "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-[#06b6d4]"
+                    : "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200";
+                menuThumb.className = isAutoReadAloudEnabled
+                    ? "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-5"
+                    : "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0";
+                menuBtn.setAttribute('aria-checked', isAutoReadAloudEnabled ? 'true' : 'false');
+            }
+
+            const wizBtn = document.getElementById('wizVoiceToggleBtn');
+            const wizThumb = document.getElementById('wizVoiceToggleThumb');
+            if (wizBtn && wizThumb) {
+                wizBtn.className = isAutoReadAloudEnabled
+                    ? "relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-[#06b6d4]"
+                    : "relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200";
+                wizThumb.className = isAutoReadAloudEnabled
+                    ? "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-4"
+                    : "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0";
+                wizBtn.setAttribute('aria-checked', isAutoReadAloudEnabled ? 'true' : 'false');
+            }
+
+            updateSpeakBtnVisualState();
+        }
+
+        function updateSpeakBtnVisualState() {
+            const btn = document.getElementById('topSpeakBtn');
+            if (!btn) return;
+            if (isCurrentlySpeaking) {
+                btn.className = "p-2 rounded-xl bg-[#06b6d4] text-white active:scale-95 transition-all border border-[#0891b2] shadow-sm animate-pulse";
+                btn.innerHTML = `<i data-lucide="volume-2" class="w-5 h-5 text-white"></i>`;
+            } else if (isAutoReadAloudEnabled) {
+                btn.className = "p-2 rounded-xl bg-[#06b6d4]/15 hover:bg-[#06b6d4]/25 active:scale-95 transition-all text-[#0891b2] border border-[#06b6d4]/40 shadow-xs";
+                btn.innerHTML = `<i data-lucide="volume-2" class="w-5 h-5 text-[#06b6d4]"></i>`;
+            } else {
+                btn.className = "p-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 transition-all text-slate-700 border border-slate-200/90 shadow-xs";
+                btn.innerHTML = `<i data-lucide="volume-2" class="w-5 h-5 text-[#06b6d4]"></i>`;
+            }
+            lucide.createIcons();
+        }
+
+        function stopSpeech() {
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            } catch (e) { }
+            isCurrentlySpeaking = false;
+            updateSpeakBtnVisualState();
+        }
+
+        function speakCurrentCard(fromAuto = false) {
+            if (!('speechSynthesis' in window)) {
+                if (!fromAuto) alert("Voice synthesis is not supported in this browser.");
+                return;
+            }
+            if (fromAuto && isSoundMuted) return;
+
+            // If user tapped the speaker button while already speaking, stop speaking
+            if (!fromAuto && window.speechSynthesis.speaking) {
+                stopSpeech();
+                return;
+            }
+
+            if (!activeQuestions || activeQuestions.length === 0) return;
+            const card = activeQuestions[currentIndex];
+            if (!card) return;
+
+            const isEs = currentLanguage === 'es';
+            const t = I18N[currentLanguage] || I18N.en;
+            let textToSpeak = '';
+
+            if (!isFlipped) {
+                const franchiseText = (isEs && card.franchise_es) ? card.franchise_es : card.franchise;
+                const qText = (isEs && card.question_es) ? card.question_es : card.question;
+                const numColors = card.colors.length;
+                const colourWord = numColors > 1 ? t.colourWordPlural : t.colourWordSingular;
+                textToSpeak = `${franchiseText}. ${qText} ... ${numColors} ${colourWord.toLowerCase()}.`;
+            } else {
+                const colorNames = [];
+                card.colors.forEach(colId => {
+                    const tileInfo = COLOR_TILES.find(tl => tl.id === colId || (tl.aliases && tl.aliases.includes(colId)));
+                    if (tileInfo) {
+                        colorNames.push((isEs && tileInfo.name_es) ? tileInfo.name_es : tileInfo.name_en);
+                    }
+                });
+                const colorsSpoken = colorNames.join(isEs ? ' y ' : ' and ');
+                const expText = (isEs && card.explanation_es) ? card.explanation_es : (card.explanation || '');
+                textToSpeak = expText ? `${colorsSpoken}. ${expText}` : `${colorsSpoken}.`;
+            }
+
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = isEs ? 'es-ES' : 'en-GB';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.02;
+
+                // Pick a clear natural voice matching the language if available
+                const voices = window.speechSynthesis.getVoices() || [];
+                const targetPrefix = isEs ? 'es' : 'en';
+                const preferredVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix) && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Online'))) ||
+                    voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix));
+                if (preferredVoice) utterance.voice = preferredVoice;
+
+                utterance.onstart = () => {
+                    isCurrentlySpeaking = true;
+                    updateSpeakBtnVisualState();
+                };
+                utterance.onend = () => {
+                    isCurrentlySpeaking = false;
+                    updateSpeakBtnVisualState();
+                };
+                utterance.onerror = () => {
+                    isCurrentlySpeaking = false;
+                    updateSpeakBtnVisualState();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                isCurrentlySpeaking = false;
+                updateSpeakBtnVisualState();
+            }
+        }
+
+        // ================= POT ROLLOVER TOGGLE (HOUSE RULE) =================
+        function togglePotRollover() {
+            isPotRolloverEnabled = !isPotRolloverEnabled;
+            playTone(isPotRolloverEnabled ? 640 : 420, 'sine', 0.06, 0.1);
+            if (!isPotRolloverEnabled) {
+                pot = 1;
+            }
+            saveSettingsToStorage();
+            updatePotMenuToggleUI();
+            updatePotBadge();
+            updateRulesCardUI();
+            renderLiveScoreboard();
+        }
+
+        function updatePotMenuToggleUI() {
+            const btn = document.getElementById('menuPotToggleBtn');
+            const thumb = document.getElementById('menuPotToggleThumb');
+            if (!btn || !thumb) return;
+
+            if (isPotRolloverEnabled) {
+                btn.className = "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-[#06b6d4]";
+                thumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-5";
+                btn.setAttribute('aria-checked', 'true');
+            } else {
+                btn.className = "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200";
+                thumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0";
+                btn.setAttribute('aria-checked', 'false');
+            }
+        }
+
+        function updatePotBadge() {
+            const badge = document.getElementById('potBadge');
+            if (!badge) return;
+
+            if (!isPotRolloverEnabled) {
+                badge.classList.add('hidden');
+                return;
+            }
+
+            badge.classList.remove('hidden');
+            const t = I18N[currentLanguage] || I18N.en;
+            const ptsUnit = pot > 1 ? (currentLanguage === 'es' ? 'ptos' : 'pts') : (currentLanguage === 'es' ? 'pto' : 'pt');
+            badge.innerText = `${t.potPrefix}: ${pot} ${ptsUnit}`;
+
+            if (pot > 1) {
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-xs animate-bounce";
+            } else {
+                badge.className = "px-2 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs";
+            }
+        }
+
+        // ================= CSV IMPORT & EXPORT ENGINE =================
+        function updateResetDeckButtonVisibility() {
+            const btn = document.getElementById('menuResetDeckBtn');
+            if (!btn) return;
+            try {
+                const hasCustom = Boolean(localStorage.getItem('colourbrain_custom_questions'));
+                btn.classList.toggle('hidden', !hasCustom);
+            } catch (e) {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function resetCustomQuestions() {
+            try {
+                localStorage.removeItem('colourbrain_custom_questions');
+                localStorage.removeItem('colourbrain_custom_questions_version');
+            } catch (e) { }
+            QUESTIONS_MASTER = DEFAULT_QUESTIONS_MASTER.map(q => ({ ...q }));
+            window.QUESTIONS_MASTER = QUESTIONS_MASTER;
+            updateResetDeckButtonVisibility();
+            updateDeckCountsAndSelectionUI();
+            setThemeAndDeck(selectedWizardDecks);
+            playTone(520, 'sine', 0.08, 0.1);
+        }
+
+        function exportQuestionsToCSV() {
+            playTone(580, 'sine', 0.05, 0.08);
+            const rows = [
+                ['id', 'deck', 'franchise', 'franchise_es', 'logo_url', 'logo_url_es', 'image_url', 'image_url_es', 'image_position', 'silhouette_url', 'question', 'question_es', 'colors', 'colors_es', 'explanation', 'explanation_es']
+            ];
+
+            QUESTIONS_MASTER.forEach(q => {
+                let colorsEsStr = q.colors_es;
+                if (!colorsEsStr && Array.isArray(q.colors)) {
+                    colorsEsStr = q.colors.map(colId => {
+                        const tile = COLOR_TILES.find(t => t.id === colId || (t.aliases && t.aliases.includes(colId)));
+                        return tile ? tile.name_es.toLowerCase() : colId;
+                    }).join(';');
+                }
+
+                rows.push([
+                    q.id,
+                    q.deck || 'disney',
+                    q.franchise || '',
+                    q.franchise_es || '',
+                    q.logo_url || '',
+                    q.logo_url_es || '',
+                    q.image_url || '',
+                    q.image_url_es || '',
+                    q.image_position || '',
+                    q.silhouette_url || '',
+                    q.question || '',
+                    q.question_es || '',
+                    (Array.isArray(q.colors) ? q.colors.join(';') : (q.colors || '')),
+                    colorsEsStr || '',
+                    q.explanation || '',
+                    q.explanation_es || ''
+                ]);
+            });
+
+            const csvContent = rows.map(r => r.map(cell => {
+                const str = String(cell ?? '').replace(/"/g, '""');
+                return `"${str}"`;
+            }).join(',')).join('\r\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `colourbrain_disney_questions_${APP_VERSION}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importQuestionsFromCSV(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const text = e.target.result;
+                    ingestCSVQuestionsText(text, false);
+                } catch (err) {
+                    alert("Error parsing CSV: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function ingestCSVQuestionsText(text, isFromGoogleSheets = false) {
+            const parsed = parseCSVText(text);
+            if (parsed.length === 0) {
+                alert("No valid question rows found in CSV data.");
+                return false;
+            }
+
+            let addedCount = 0;
+            parsed.forEach(row => {
+                if (!row.question) return;
+                const existingIdx = QUESTIONS_MASTER.findIndex(q => q.id === row.id || (q.question && q.question.toLowerCase() === row.question.toLowerCase()));
+                if (existingIdx >= 0) {
+                    QUESTIONS_MASTER[existingIdx] = { ...QUESTIONS_MASTER[existingIdx], ...row };
+                } else {
+                    QUESTIONS_MASTER.push(row);
+                    addedCount++;
+                }
+            });
+
+            try {
+                localStorage.setItem('colourbrain_custom_questions', JSON.stringify(QUESTIONS_MASTER));
+                localStorage.setItem('colourbrain_custom_questions_version', window.QUESTIONS_VERSION || APP_VERSION);
+            } catch (err) { }
+
+            updateResetDeckButtonVisibility();
+            updateDeckCountsAndSelectionUI();
+            updateSeenCardsStatusUI();
+            setThemeAndDeck(selectedWizardDecks);
+            playPointSfx();
+
+            const isEs = currentLanguage === 'es';
+            if (isFromGoogleSheets) {
+                alert(isEs
+                    ? `¡Sincronizado con Google Sheets! ${parsed.length} preguntas cargadas (${addedCount} nuevas).`
+                    : `Synced live from Google Sheets! ${parsed.length} questions loaded (${addedCount} new cards added).`);
+            } else {
+                alert(`Successfully ingested ${parsed.length} questions (${addedCount} new cards added)!`);
+            }
+            return true;
+        }
+
+        async function syncFromGoogleSheet() {
+            const btn = document.getElementById('syncGSheetsBtn');
+            const lbl = document.getElementById('syncGSheetsLabel');
+            const t = I18N[currentLanguage] || I18N.en;
+            const isEs = currentLanguage === 'es';
+
+            let sheetIdOrUrl = MASTER_GOOGLE_SHEET_ID;
+            try {
+                const savedSheet = localStorage.getItem('colourbrain_gsheet_id');
+                if (savedSheet) sheetIdOrUrl = savedSheet;
+            } catch (e) { }
+
+            if (btn) btn.disabled = true;
+            if (lbl) lbl.innerText = t.syncingGSheetsBtn || 'Syncing...';
+            playTone(540, 'sine', 0.05, 0.08);
+
+            const extractSheetId = (input) => {
+                const trimmed = String(input || '').trim();
+                const match = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                return match ? match[1] : trimmed;
+            };
+
+            const tryFetchSheetCSV = async (idStr) => {
+                const cleanId = extractSheetId(idStr);
+                const urls = [
+                    `https://docs.google.com/spreadsheets/d/${cleanId}/export?format=csv&gid=${MASTER_GOOGLE_SHEET_GID}`,
+                    `https://docs.google.com/spreadsheets/d/${cleanId}/gviz/tq?tqx=out:csv`,
+                    `https://docs.google.com/spreadsheets/d/${cleanId}/export?format=csv`
+                ];
+                for (const url of urls) {
+                    try {
+                        const res = await fetch(url, { cache: 'no-store' });
+                        if (res.ok) {
+                            const text = await res.text();
+                            if (text && !text.trim().startsWith('<!DOCTYPE html>') && text.includes('question')) {
+                                return text;
+                            }
+                        }
+                    } catch (e) { }
+                }
+                return null;
+            };
+
+            try {
+                let csvText = await tryFetchSheetCSV(sheetIdOrUrl);
+                if (!csvText) {
+                    const promptMsg = isEs
+                        ? "Para sincronizar en directo, asegúrate de que tu Google Sheet tenga acceso 'Cualquier persona con el enlace (Lector)' o pega aquí el enlace/ID de tu hoja de cálculo:"
+                        : "To sync live, ensure your Google Sheet is shared as 'Anyone with the link can view' (or Published to the web), or paste a Google Sheet URL / ID below:";
+                    const userInput = prompt(promptMsg, `https://docs.google.com/spreadsheets/d/${MASTER_GOOGLE_SHEET_ID}/edit`);
+                    if (userInput && userInput.trim()) {
+                        const newId = extractSheetId(userInput);
+                        try { localStorage.setItem('colourbrain_gsheet_id', newId); } catch (e) { }
+                        csvText = await tryFetchSheetCSV(newId);
+                    } else {
+                        return;
+                    }
+                }
+
+                if (csvText) {
+                    ingestCSVQuestionsText(csvText, true);
+                } else {
+                    alert(isEs
+                        ? "No se pudo descargar el CSV de Google Sheets. En Google Sheets, haz clic en Compartir → 'Cualquier persona con el enlace (Lector)' e inténtalo de nuevo."
+                        : "Could not fetch CSV from Google Sheets. In Google Sheets, click Share → 'Anyone with the link (Viewer)' or File → Share → Publish to web, then try again.");
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+                if (lbl) lbl.innerText = t.syncGSheetsBtn || 'Sync from Google Sheet';
+            }
+        }
+
+        function parseCSVText(text) {
+            const lines = [];
+            let row = [''];
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                const next = text[i + 1];
+
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push('');
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    if (row.length > 1 || row[0] !== '') {
+                        lines.push(row);
+                    }
+                    row = [''];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== '') {
+                lines.push(row);
+            }
+
+            if (lines.length < 2) return [];
+            const headers = lines[0].map(h => h.trim().toLowerCase());
+            const questions = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const r = lines[i];
+                if (r.length < 2) continue;
+                const obj = {};
+                headers.forEach((h, idx) => {
+                    obj[h] = r[idx] !== undefined ? r[idx].trim() : '';
+                });
+
+                let colors = [];
+                if (obj.colors) {
+                    colors = obj.colors.split(/[;,]/).map(c => c.trim().toLowerCase()).filter(Boolean);
+                } else if (obj.colors_es) {
+                    const esToIdMap = {
+                        'rojo': 'red', 'azul': 'blue', 'verde': 'green', 'amarillo': 'yellow',
+                        'naranja': 'orange', 'morado': 'purple', 'violeta': 'purple',
+                        'rosa': 'pink', 'rosado': 'pink', 'marrón': 'brown', 'marron': 'brown', 'café': 'brown',
+                        'negro': 'black', 'blanco': 'white', 'gris': 'grey', 'grey': 'grey', 'gray': 'grey'
+                    };
+                    colors = obj.colors_es.split(/[;,]/).map(c => {
+                        const trimmed = c.trim().toLowerCase();
+                        return esToIdMap[trimmed] || trimmed;
+                    }).filter(Boolean);
+                }
+
+                const allowedDecks = ['disney', 'classic', 'pixar', 'lucasfilm', 'marvel', 'disneychannel'];
+                const normalizedDeck = allowedDecks.includes(obj.deck) ? obj.deck : 'disney';
+
+                questions.push({
+                    id: parseInt(obj.id) || (QUESTIONS_MASTER.length + questions.length + 1),
+                    deck: normalizedDeck,
+                    franchise: obj.franchise || 'Disney',
+                    franchise_es: obj.franchise_es || '',
+                    logo_url: obj.logo_url || '',
+                    logo_url_es: obj.logo_url_es || '',
+                    image_url: obj.image_url || '',
+                    image_url_es: obj.image_url_es || '',
+                    question: obj.question || '',
+                    question_es: obj.question_es || '',
+                    colors: colors.length > 0 ? colors : ['white'],
+                    colors_es: obj.colors_es || '',
+                    image_position: obj.image_position || '',
+                    silhouette_url: obj.silhouette_url || '',
+                    explanation: obj.explanation || '',
+                    explanation_es: obj.explanation_es || ''
+                });
+            }
+            return questions;
+        }
+
+        // ================= WIZARD / ONBOARDING FLOW =================
+        function openWizard(step = 1) {
+            document.getElementById('wizardModal').classList.remove('hidden');
+            goToWizardStep(step);
+            toggleMenu(false);
+        }
+
+        function goToWizardStep(step) {
+            playTone(500, 'sine', 0.05, 0.08);
+            document.getElementById('wizardStep1').classList.toggle('hidden', step !== 1);
+            document.getElementById('wizardStep2').classList.toggle('hidden', step !== 2);
+            document.getElementById('wizardStep3').classList.toggle('hidden', step !== 3);
+
+            if (step === 2) {
+                ensureTeamsMatchPlayerCount();
+                renderWizardTeamsList();
+            } else if (step === 3) {
+                updateDeckCountsAndSelectionUI();
+            }
+        }
+
+        function selectPlayerCount(num) {
+            playTone(550, 'triangle', 0.06, 0.1);
+            selectedPlayerCount = num;
+
+            document.querySelectorAll('.player-count-btn').forEach((btn, idx) => {
+                const val = idx + 1;
+                if (val === num) {
+                    btn.className = "player-count-btn h-16 rounded-2xl border-2 border-[#06b6d4] bg-[#06b6d4]/15 flex items-center justify-center active:scale-95 transition-all text-[#06b6d4]";
+                } else {
+                    btn.className = "player-count-btn h-16 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center active:scale-95 transition-all text-slate-700";
+                }
+            });
+        }
+
+        function ensureTeamsMatchPlayerCount() {
+            const t = I18N[currentLanguage] || I18N.en;
+
+            if (teams.length < selectedPlayerCount) {
+                for (let i = teams.length; i < selectedPlayerCount; i++) {
+                    const preset = TEAM_PRESETS[i % TEAM_PRESETS.length];
+                    const defaultName = selectedPlayerCount === 1 ? t.soloPlayer : preset.name;
+                    teams.push({
+                        id: i + 1,
+                        name: defaultName,
+                        score: 0,
+                        color: preset.color,
+                        hex: preset.hex
+                    });
+                }
+            } else if (teams.length > selectedPlayerCount) {
+                teams = teams.slice(0, selectedPlayerCount);
+            }
+
+            saveTeamsToStorage();
+            syncPlayerThemeColor();
+        }
+
+        function renderWizardTeamsList() {
+            const container = document.getElementById('wizardTeamsList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.className = "p-3 rounded-2xl border border-slate-200 bg-slate-50/80 space-y-2";
+
+                let swatchesHtml = '';
+                TEAM_COLOUR_CHOICES.forEach(col => {
+                    const isSelected = team.hex === col.hex;
+                    swatchesHtml += `
+            <button type="button" onclick="updateTeamColour(${team.id}, '${col.hex}', '${col.bg}')"
+              class="w-6 h-6 rounded-full transition-transform active:scale-90 ${col.bg} ${isSelected ? 'ring-2 ring-offset-2 ring-slate-800 scale-110' : 'opacity-85 hover:opacity-100'}"
+              style="background-color: ${col.hex}"
+              title="${col.name}">
+            </button>
+          `;
+                });
+
+                card.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-bold text-slate-500 font-game">
+            <div class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full shadow-xs" style="background-color: ${team.hex}"></span>
+              <span>PLAYER ${index + 1}</span>
+            </div>
+            <div class="flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-lg border border-slate-200" title="Adjust Score">
+              <button type="button" onclick="adjustTeamScore(${team.id}, -1)"
+                class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-600 flex items-center justify-center font-black leading-none active:scale-90">-</button>
+              <span class="px-1 text-slate-800 font-black">${team.score} pts</span>
+              <button type="button" onclick="adjustTeamScore(${team.id}, 1)"
+                class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-600 flex items-center justify-center font-black leading-none active:scale-90">+</button>
+            </div>
+          </div>
+          <div>
+            <input type="text" value="${escapeHtml(team.name)}"
+              oninput="updateTeamName(${team.id}, this.value)"
+              class="w-full px-3 py-2 text-sm font-bold font-game text-slate-800 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
+              placeholder="Player Name" />
+          </div>
+          <div class="flex items-center gap-1.5 pt-1">
+            ${swatchesHtml}
+          </div>
+        `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function adjustTeamScore(teamId, delta) {
+            const team = teams.find(t => t.id === teamId);
+            if (!team) return;
+            team.score = Math.max(0, (team.score || 0) + delta);
+            playTone(delta > 0 ? 620 : 420, 'sine', 0.04, 0.08);
+            saveTeamsToStorage();
+            renderWizardTeamsList();
+            renderLiveScoreboard();
+        }
+
+        function updateTeamName(teamId, newName) {
+            const team = teams.find(t => t.id === teamId);
+            if (team) {
+                team.name = newName;
+                saveTeamsToStorage();
+                renderLiveScoreboard();
+            }
+        }
+
+        function updateTeamColour(teamId, hex, bgClass) {
+            playTone(600, 'sine', 0.04, 0.08);
+            const team = teams.find(t => t.id === teamId);
+            if (team) {
+                team.hex = hex;
+                team.color = bgClass;
+                saveTeamsToStorage();
+                syncPlayerThemeColor();
+                renderLiveScoreboard();
+                renderWizardTeamsList();
+                renderCurrentCard();
+            }
+        }
+
+        function getQuestionsForDeckKey(key) {
+            if (key === 'all') return [...QUESTIONS_MASTER];
+            if (key === 'classic' || key === 'disney') {
+                return QUESTIONS_MASTER.filter(q => q.deck === 'classic' || q.deck === 'disney');
+            }
+            return QUESTIONS_MASTER.filter(q => q.deck === key);
+        }
+
+        function updateDeckCountsAndSelectionUI() {
+            const counts = {
+                all: QUESTIONS_MASTER.length,
+                disneychannel: getQuestionsForDeckKey('disneychannel').length,
+                classic: getQuestionsForDeckKey('classic').length,
+                pixar: getQuestionsForDeckKey('pixar').length,
+                lucasfilm: getQuestionsForDeckKey('lucasfilm').length,
+                marvel: getQuestionsForDeckKey('marvel').length
+            };
+
+            Object.keys(counts).forEach(k => {
+                const badge = document.getElementById(`deckCount-${k}`);
+                if (badge) badge.innerText = counts[k];
+            });
+
+            const isAllSelected = selectedWizardDecks.includes('all') ||
+                ALL_CATEGORY_KEYS.every(k => selectedWizardDecks.includes(k));
+
+            document.querySelectorAll('.deck-choice-btn').forEach(btn => {
+                const key = btn.getAttribute('data-deck');
+                const isSelected = key === 'all' ? isAllSelected : (!isAllSelected && selectedWizardDecks.includes(key));
+                const dot = btn.querySelector('.deck-check-indicator');
+
+                if (isSelected) {
+                    btn.className = "deck-choice-btn w-full p-2.5 rounded-2xl border-2 border-[#06b6d4] bg-[#06b6d4]/10 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5";
+                    if (dot) {
+                        dot.className = "deck-check-indicator text-[#06b6d4] font-bold text-lg flex-none";
+                        dot.innerText = '●';
+                    }
+                } else {
+                    btn.className = "deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5";
+                    if (dot) {
+                        dot.className = "deck-check-indicator text-slate-300 font-bold text-lg flex-none";
+                        dot.innerText = '○';
+                    }
+                }
+            });
+
+            // Update Start Game button with total selected question count
+            const t = I18N[currentLanguage] || I18N.en;
+            const startBtn = document.getElementById('wizStartGameBtn');
+            if (startBtn) {
+                let selectedTotal = counts.all;
+                if (!isAllSelected) {
+                    selectedTotal = selectedWizardDecks.reduce((acc, k) => acc + (counts[k] || 0), 0);
+                }
+                startBtn.innerText = `${t.wizStartGame} (${selectedTotal})`;
+            }
+        }
+
+        function pickWizardDeck(deckKey) {
+            playTone(520, 'sine', 0.05, 0.08);
+            if (deckKey === 'all') {
+                selectedWizardDecks = ['all'];
+                temporaryWizardDeck = 'all';
+            } else {
+                if (selectedWizardDecks.includes('all')) {
+                    selectedWizardDecks = [deckKey];
+                } else if (selectedWizardDecks.includes(deckKey)) {
+                    selectedWizardDecks = selectedWizardDecks.filter(k => k !== deckKey);
+                    if (selectedWizardDecks.length === 0) {
+                        selectedWizardDecks = ['all'];
+                    }
+                } else {
+                    selectedWizardDecks.push(deckKey);
+                    if (ALL_CATEGORY_KEYS.every(k => selectedWizardDecks.includes(k))) {
+                        selectedWizardDecks = ['all'];
+                    }
+                }
+                temporaryWizardDeck = selectedWizardDecks.length === 1 ? selectedWizardDecks[0] : 'custom';
+            }
+            updateDeckCountsAndSelectionUI();
+        }
+
+        function startGameFromWizard() {
+            syncPlayerThemeColor();
+            setThemeAndDeck(selectedWizardDecks);
+            renderLiveScoreboard();
+            document.getElementById('wizardModal').classList.add('hidden');
+            playTone(700, 'triangle', 0.12, 0.15);
+
+            // Show one-time How to Play & Rules guide on first ever game launch
+            let openedGuide = false;
+            try {
+                if (!localStorage.getItem('colourbrain_seen_guide_v1')) {
+                    localStorage.setItem('colourbrain_seen_guide_v1', 'true');
+                    openedGuide = true;
+                    setTimeout(() => openHowToPlayModal(), 250);
+                }
+            } catch (e) { }
+
+            if (!openedGuide && isAutoReadAloudEnabled) {
+                setTimeout(() => speakCurrentCard(true), 220);
+            }
+        }
+
+        function returnToStartNewGame() {
+            resetMatchScores();
+            openWizard(1);
+        }
+
+        // ================= HOW TO PLAY & RULES GUIDE MODAL =================
+        function renderGuideSwatches() {
+            const row = document.getElementById('guideSwatchesRow');
+            if (!row) return;
+            const isEs = currentLanguage === 'es';
+            row.innerHTML = COLOR_TILES.map(tile => {
+                const label = isEs ? tile.name_es : tile.name_en;
+                const textCol = tile.textDark ? '#0f172a' : '#ffffff';
+                return `
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase font-game shadow-2xs"
+                          style="background-color: ${tile.hex}; color: ${textCol}; border: 1.5px solid ${tile.border};">
+                        ${escapeHtml(label)}
+                    </span>
+                `;
+            }).join('');
+        }
+
+        function openHowToPlayModal() {
+            playTone(580, 'sine', 0.05, 0.08);
+            renderGuideSwatches();
+            toggleMenu(false);
+            const modal = document.getElementById('howToPlayModal');
+            if (modal) modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeHowToPlayModal() {
+            playTone(480, 'sine', 0.05, 0.08);
+            const modal = document.getElementById('howToPlayModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // ================= THEME & DECK ENGINE =================
+        function setThemeAndDeck(deckSelection) {
+            const selectionArray = Array.isArray(deckSelection) ? deckSelection : [deckSelection || 'all'];
+            const isAll = selectionArray.includes('all') || ALL_CATEGORY_KEYS.every(k => selectionArray.includes(k));
+
+            currentDeckKey = isAll ? 'all' : (selectionArray.length === 1 ? selectionArray[0] : 'all');
+            document.body.className = `theme-${currentDeckKey} text-slate-800 flex flex-col justify-between relative`;
+
+            if (!QUESTIONS_MASTER || QUESTIONS_MASTER.length === 0) {
+                console.warn("questions.js not loaded or empty. Please ensure questions.js is in the same folder.");
+            }
+
+            if (isAll) {
+                activeQuestions = [...QUESTIONS_MASTER];
+            } else {
+                const allowedSet = new Set();
+                selectionArray.forEach(k => {
+                    if (k === 'classic' || k === 'disney') {
+                        allowedSet.add('classic');
+                        allowedSet.add('disney');
+                    } else {
+                        allowedSet.add(k);
+                    }
+                });
+                activeQuestions = QUESTIONS_MASTER.filter(q => allowedSet.has(q.deck));
+            }
+
+            // Safe fallback if category has no cards yet
+            if (!activeQuestions || activeQuestions.length === 0) {
+                alert("No questions found for this expansion category yet. Loading all available questions!");
+                activeQuestions = [...QUESTIONS_MASTER];
+                currentDeckKey = 'all';
+            }
+
+            // Update subtitle to reflect chosen deck(s)
+            const deckSub = document.getElementById('deckSubtitle');
+            if (deckSub) {
+                const t = I18N[currentLanguage] || I18N.en;
+                if (isAll) deckSub.innerText = t.deckSubtitle;
+                else if (selectionArray.length > 1) deckSub.innerText = `${t.customMixSub} (${activeQuestions.length} ${t.cardsUnit})`;
+                else if (currentDeckKey === 'classic' || currentDeckKey === 'disney') deckSub.innerText = t.deckDisney;
+                else if (currentDeckKey === 'disneychannel') deckSub.innerText = t.deckDisneyChannel;
+                else if (currentDeckKey === 'pixar') deckSub.innerText = t.deckPixar;
+                else if (currentDeckKey === 'lucasfilm') deckSub.innerText = t.deckLucasfilm;
+                else if (currentDeckKey === 'marvel') deckSub.innerText = t.deckMarvel;
+            }
+
+            // Unseen-First Smart Shuffle: prioritize questions not yet played across recent sessions
+            const shuffleArray = (arr) => {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            };
+
+            let unseenPool = activeQuestions.filter(q => !seenCardIds.has(Number(q.id)));
+            let seenPool = activeQuestions.filter(q => seenCardIds.has(Number(q.id)));
+
+            // If every question in the selected category has already been seen, reset those IDs so a fresh cycle starts
+            if (unseenPool.length === 0 && seenPool.length > 0) {
+                activeQuestions.forEach(q => seenCardIds.delete(Number(q.id)));
+                saveSeenCardsToStorage();
+                unseenPool = [...activeQuestions];
+                seenPool = [];
+            }
+
+            activeQuestions = [...shuffleArray(unseenPool), ...shuffleArray(seenPool)];
+
+            prepareCardForNavigation();
+            currentIndex = 0;
+            isFlipped = false;
+            resetRoundState();
+            syncPlayerThemeColor();
+            renderCurrentCard();
+            renderLiveScoreboard();
+            updateSeenCardsStatusUI();
+            startRoundTimer();
+            toggleMenu(false);
+        }
+
+        // ================= CARD LOGIC & RENDERING (LOGO & ANSWER IMAGE SUPPORT) =================
+        function renderCurrentCard() {
+            if (!activeQuestions || activeQuestions.length === 0) return;
+            const card = activeQuestions[currentIndex];
+            const t = I18N[currentLanguage] || I18N.en;
+
+            // 1. Franchise Title / Logo on Front
+            const frontLogo = document.getElementById('frontFranchiseLogo');
+            const frontBadge = document.getElementById('frontFranchiseBadge');
+
+            const isEs = currentLanguage === 'es';
+            const franchiseText = (isEs && card.franchise_es) ? card.franchise_es : card.franchise;
+            if (frontBadge) frontBadge.innerText = franchiseText;
+
+            const activeLogoUrl = isEs ? (card.logo_url_es || card.logo_url) : (card.logo_url || card.logo_url_es);
+            const hasLogo = Boolean(activeLogoUrl && activeLogoUrl.trim());
+            if (hasLogo) {
+                const logoSrc = activeLogoUrl.trim();
+
+                if (frontLogo) {
+                    // Hide previous logo immediately until new image finishes loading
+                    frontLogo.classList.add('hidden');
+                    if (frontBadge) frontBadge.classList.remove('hidden');
+                    frontLogo.onload = () => {
+                        frontLogo.classList.remove('hidden');
+                        if (frontBadge) frontBadge.classList.add('hidden');
+                    };
+                    frontLogo.onerror = () => {
+                        frontLogo.classList.add('hidden');
+                        if (frontBadge) frontBadge.classList.remove('hidden');
+                    };
+                    frontLogo.alt = franchiseText;
+                    frontLogo.src = logoSrc;
+                    if (frontLogo.complete && frontLogo.naturalHeight > 0) {
+                        frontLogo.classList.remove('hidden');
+                        if (frontBadge) frontBadge.classList.add('hidden');
+                    }
+                }
+            } else {
+                if (frontLogo) {
+                    frontLogo.classList.add('hidden');
+                    frontLogo.removeAttribute('src');
+                }
+                if (frontBadge) frontBadge.classList.remove('hidden');
+            }
+
+            // 2. Question Text in active language
+            const qText = (currentLanguage === 'es' && card.question_es) ? card.question_es : card.question;
+            document.getElementById('frontQuestionText').innerText = qText;
+
+            const numColors = card.colors.length;
+            const colourWord = numColors > 1 ? t.colourWordPlural : t.colourWordSingular;
+            const countNum = document.getElementById('frontColorCountNumber');
+            if (countNum) countNum.innerText = numColors;
+            const countWord = document.getElementById('frontColorCountWord');
+            if (countWord) countWord.innerText = colourWord;
+            const countBadge = document.getElementById('frontColorCountBadge');
+            if (countBadge) countBadge.innerText = `${numColors} ${colourWord}`;
+            const silContainer = document.getElementById('frontSilhouetteContainer');
+            if (silContainer) {
+                silContainer.title = `${numColors} ${colourWord}`;
+                silContainer.setAttribute('aria-label', `${numColors} ${colourWord}`);
+            }
+            const silImg = document.getElementById('frontSilhouetteImg');
+            if (silImg) {
+                const activeSil = (card.silhouette_url && card.silhouette_url.trim()) ? card.silhouette_url.trim() : 'assets/silhouettes/mickey_silhouette.svg';
+                silImg.src = activeSil;
+            }
+
+            // 3. Colour Swatches on Back
+            const container = document.getElementById('backSwatchesGrid');
+            container.innerHTML = '';
+            const colorNames = [];
+
+            card.colors.forEach(colId => {
+                const tileInfo = COLOR_TILES.find(t => t.id === colId || (t.aliases && t.aliases.includes(colId)));
+                if (tileInfo) {
+                    const tileName = (currentLanguage === 'es' && tileInfo.name_es) ? tileInfo.name_es : tileInfo.name_en;
+                    colorNames.push(tileName.toUpperCase());
+                    // Clean square swatch without redundant sub-labels
+                    const swatch = document.createElement('div');
+                    swatch.className = "flex flex-col items-center";
+                    swatch.innerHTML = `
+            <div class="w-11 h-11 sm:w-13 sm:h-13 rounded-xl shadow-md flex items-center justify-center font-bold transition-transform hover:scale-105" style="background-color: ${tileInfo.hex}; border: 3px solid ${tileInfo.border};">
+            </div>
+          `;
+                    container.appendChild(swatch);
+                }
+            });
+
+            document.getElementById('backColorNames').innerText = colorNames.join(' & ');
+
+            // 4. Answer Picture (Character / Scene Visual)
+            const backImgContainer = document.getElementById('backImageContainer');
+            const backContentContainer = document.getElementById('backContentContainer');
+            const backImg = document.getElementById('backAnswerImage');
+            const activeImageUrl = isEs ? (card.image_url_es || card.image_url) : (card.image_url || card.image_url_es);
+            const hasAnswerImage = Boolean(activeImageUrl && activeImageUrl.trim());
+
+            if (backImgContainer && backImg) {
+                if (hasAnswerImage) {
+                    const trimmedImgUrl = activeImageUrl.trim();
+                    const isLogoAsset = trimmedImgUrl.includes('/logos/');
+                    backImgContainer.classList.add('hidden');
+                    backImg.className = isLogoAsset
+                        ? "w-full h-full object-contain p-4 pointer-events-none"
+                        : "w-full h-full object-cover object-top pointer-events-none";
+                    backImg.style.objectPosition = (!isLogoAsset && card.image_position && card.image_position.trim())
+                        ? card.image_position.trim()
+                        : (isLogoAsset ? 'center' : 'center top');
+                    backImg.onload = () => {
+                        backImgContainer.classList.remove('hidden');
+                        if (backContentContainer) {
+                            backContentContainer.className = "w-full h-1/2 pt-1 sm:pt-1.5 px-3 pb-2 flex flex-col items-center justify-center text-center gap-1 sm:gap-1.5 overflow-hidden flex-1";
+                        }
+                    };
+                    backImg.onerror = () => {
+                        backImgContainer.classList.add('hidden');
+                        if (backContentContainer) {
+                            backContentContainer.className = "w-full h-full p-5 sm:p-6 flex flex-col items-center justify-center text-center gap-3 overflow-hidden flex-1";
+                        }
+                    };
+                    backImg.alt = `${franchiseText} Answer Visual`;
+                    backImg.src = trimmedImgUrl;
+                    if (backImg.complete && backImg.naturalHeight > 0) {
+                        backImgContainer.classList.remove('hidden');
+                        if (backContentContainer) {
+                            backContentContainer.className = "w-full h-1/2 pt-1 sm:pt-1.5 px-3 pb-2 flex flex-col items-center justify-center text-center gap-1 sm:gap-1.5 overflow-hidden flex-1";
+                        }
+                    }
+                } else {
+                    backImgContainer.classList.add('hidden');
+                    backImg.removeAttribute('src');
+                    backImg.style.objectPosition = '';
+                    if (backContentContainer) {
+                        backContentContainer.className = "w-full h-full p-5 sm:p-6 flex flex-col items-center justify-center text-center gap-3 overflow-hidden flex-1";
+                    }
+                }
+            }
+
+            // 5. Explanation in active language
+            const expText = (currentLanguage === 'es' && card.explanation_es) ? card.explanation_es : card.explanation;
+            document.getElementById('backExplanation').innerText = expText;
+
+            const cardEl = document.getElementById('playingCard');
+            const flipBtnLabel = document.getElementById('flipBtnLabel');
+            if (isFlipped) {
+                cardEl.classList.add('rotate-y-180');
+                if (flipBtnLabel) flipBtnLabel.innerText = t.question;
+            } else {
+                cardEl.classList.remove('rotate-y-180');
+                if (flipBtnLabel) flipBtnLabel.innerText = t.answer;
+            }
+
+            preloadAdjacentCards();
+            lucide.createIcons();
+        }
+
+        function preloadAdjacentCards() {
+            if (!activeQuestions || activeQuestions.length <= 1) return;
+            const isEs = currentLanguage === 'es';
+            const nextIdx = (currentIndex + 1) % activeQuestions.length;
+            const nextQ = activeQuestions[nextIdx];
+            if (!nextQ) return;
+
+            const nextLogo = isEs ? (nextQ.logo_url_es || nextQ.logo_url) : (nextQ.logo_url || nextQ.logo_url_es);
+            const nextImg = isEs ? (nextQ.image_url_es || nextQ.image_url) : (nextQ.image_url || nextQ.image_url_es);
+            [nextLogo, nextImg].forEach(src => {
+                if (src && src.trim()) {
+                    const img = new Image();
+                    img.src = src.trim();
+                }
+            });
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            playCardFlipSfx();
+            const t = I18N[currentLanguage] || I18N.en;
+            const cardEl = document.getElementById('playingCard');
+            const flipBtnLabel = document.getElementById('flipBtnLabel');
+            if (isFlipped) {
+                stopRoundTimer();
+                markCurrentCardAsSeen();
+                cardEl.classList.add('rotate-y-180');
+                if (flipBtnLabel) flipBtnLabel.innerText = t.question;
+            } else {
+                cardEl.classList.remove('rotate-y-180');
+                if (flipBtnLabel) flipBtnLabel.innerText = t.answer;
+                if (!roundConfirmed) startRoundTimer();
+            }
+            renderLiveScoreboard();
+            if (isAutoReadAloudEnabled) {
+                setTimeout(() => speakCurrentCard(true), 180);
+            } else {
+                stopSpeech();
+            }
+        }
+
+        function prepareCardForNavigation() {
+            stopSpeech();
+            if (isFlipped) {
+                const cardEl = document.getElementById('playingCard');
+                if (cardEl) {
+                    // Instantly snap card to front before updating content so next card's answer is never previewed
+                    cardEl.style.transition = 'none';
+                    cardEl.classList.remove('rotate-y-180');
+                    void cardEl.offsetWidth; // Force synchronous browser DOM layout update
+                    cardEl.style.transition = '';
+                }
+            }
+        }
+
+        function nextCard() {
+            if (autoAdvanceTimer) {
+                clearTimeout(autoAdvanceTimer);
+                autoAdvanceTimer = null;
+            }
+            playTone(550, 'sine', 0.05, 0.08);
+            markCurrentCardAsSeen();
+            prepareCardForNavigation();
+            currentIndex = (currentIndex + 1) % activeQuestions.length;
+            isFlipped = false;
+            resetRoundState();
+            renderCurrentCard();
+            renderLiveScoreboard();
+            startRoundTimer();
+            if (isAutoReadAloudEnabled) {
+                setTimeout(() => speakCurrentCard(true), 180);
+            }
+        }
+
+        function prevCard() {
+            if (autoAdvanceTimer) {
+                clearTimeout(autoAdvanceTimer);
+                autoAdvanceTimer = null;
+            }
+            playTone(500, 'sine', 0.05, 0.08);
+            prepareCardForNavigation();
+            currentIndex = (currentIndex - 1 + activeQuestions.length) % activeQuestions.length;
+            isFlipped = false;
+            resetRoundState();
+            renderCurrentCard();
+            renderLiveScoreboard();
+            startRoundTimer();
+            if (isAutoReadAloudEnabled) {
+                setTimeout(() => speakCurrentCard(true), 180);
+            }
+        }
+
+        function resetRoundState() {
+            roundChoices = {};
+            roundConfirmed = false;
+            roundFeedbackMessage = '';
+        }
+
+        function getContrastColor(hex) {
+            if (!hex) return '#ffffff';
+            const c = hex.replace('#', '');
+            const r = parseInt(c.substr(0, 2), 16);
+            const g = parseInt(c.substr(2, 2), 16);
+            const b = parseInt(c.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 170) ? '#0f172a' : '#ffffff';
+        }
+
+        function toggleTeamCorrect(teamId) {
+            if (roundConfirmed) return;
+            if (isSuddenDeath && suddenDeathTeamIds.length > 0 && !suddenDeathTeamIds.includes(teamId)) return;
+            if (roundChoices[teamId] === 'correct') {
+                delete roundChoices[teamId];
+                playTone(350, 'sine', 0.04, 0.08);
+            } else {
+                roundChoices[teamId] = 'correct';
+                playTone(620, 'sine', 0.05, 0.09);
+            }
+            renderLiveScoreboard();
+        }
+
+        function setTeamChoice(teamId, choice) {
+            toggleTeamCorrect(teamId);
+        }
+
+        // ================= AUTOMATED ROUND SCORING & SCOREBOARD =================
+        function renderLiveScoreboard() {
+            const list = document.getElementById('liveTeamsList');
+            if (!list) return;
+            list.innerHTML = '';
+            const t = I18N[currentLanguage] || I18N.en;
+
+            updatePotBadge();
+            updateTargetScoreUI();
+            updateSuddenDeathBadgeUI();
+
+            teams.forEach(team => {
+                const isCorrect = roundChoices[team.id] === 'correct';
+                const isEliminatedInSuddenDeath = isSuddenDeath && suddenDeathTeamIds.length > 0 && !suddenDeathTeamIds.includes(team.id);
+                const isLocked = roundConfirmed || isEliminatedInSuddenDeath;
+                const defaultTextColor = getContrastColor(team.hex);
+
+                const box = document.createElement('button');
+                box.type = 'button';
+                box.onclick = () => toggleTeamCorrect(team.id);
+                box.disabled = isLocked;
+
+                if (isCorrect) {
+                    // Tapped / Correct State: Vibrant green background highlight with checkmark
+                    box.className = `relative flex-1 min-w-[68px] max-w-[130px] sm:max-w-[150px] py-1.5 sm:py-2.5 px-2 rounded-2xl bg-emerald-500 text-white font-game shadow-md shadow-emerald-500/30 ring-3 ring-emerald-300 flex flex-col items-center justify-center text-center transition-all duration-200 transform scale-102 ${isLocked ? 'opacity-90 cursor-default' : 'hover:bg-emerald-600 active:scale-95 cursor-pointer'}`;
+                    box.innerHTML = `
+                        <!-- Checkmark badge in corner -->
+                        <span class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white text-emerald-600 shadow-sm flex items-center justify-center font-black text-xs">
+                            ✓
+                        </span>
+                        <!-- Player Name on top -->
+                        <div class="w-full flex items-center justify-center gap-1 leading-tight">
+                            <span class="w-2 h-2 rounded-full flex-none shadow-2xs" style="background-color: ${team.hex}; border: 1px solid rgba(255,255,255,0.9);"></span>
+                            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate max-w-full">${escapeHtml(team.name)}</span>
+                        </div>
+                        <!-- Current Score on bottom -->
+                        <span class="font-black text-xl sm:text-2xl leading-none mt-1 text-white">${team.score}</span>
+                    `;
+                } else {
+                    // Default State: Coloured to player's colour theme
+                    const isWhiteOrLight = defaultTextColor === '#0f172a';
+                    const sdHighlight = (isSuddenDeath && !isEliminatedInSuddenDeath) ? 'ring-2 ring-rose-500 shadow-md' : '';
+                    const stateClass = isEliminatedInSuddenDeath
+                        ? 'opacity-30 grayscale cursor-not-allowed'
+                        : (isLocked ? 'opacity-70 cursor-default' : 'hover:opacity-95 hover:shadow-md active:scale-95 cursor-pointer');
+                    box.className = `relative flex-1 min-w-[68px] max-w-[130px] sm:max-w-[150px] py-1.5 sm:py-2.5 px-2 rounded-2xl font-game shadow-sm flex flex-col items-center justify-center text-center transition-all duration-200 ${sdHighlight} ${stateClass}`;
+                    box.style.backgroundColor = team.hex;
+                    box.style.color = defaultTextColor;
+                    if (isWhiteOrLight) {
+                        box.style.border = '2px solid rgba(15, 23, 42, 0.12)';
+                    } else {
+                        box.style.border = '2px solid rgba(255, 255, 255, 0.4)';
+                    }
+
+                    box.innerHTML = `
+                        ${(isSuddenDeath && !isEliminatedInSuddenDeath) ? '<span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white shadow-xs flex items-center justify-center font-black text-[9px]">⚡</span>' : ''}
+                        <!-- Player Name on top -->
+                        <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate w-full px-0.5 leading-tight">${escapeHtml(team.name)}</span>
+                        <!-- Current Score on bottom -->
+                        <span class="font-black text-xl sm:text-2xl leading-none mt-1">${team.score}</span>
+                    `;
+                }
+
+                list.appendChild(box);
+            });
+
+            // Bottom Action Bar: Confirm Button / Round Feedback
+            const actionBar = document.getElementById('scoringActionBar');
+            if (!actionBar) return;
+
+            if (!roundConfirmed) {
+                const correctCount = Object.keys(roundChoices).filter(k => roundChoices[k] === 'correct').length;
+                const confirmText = t.confirmScoresBtn || "CONFIRM SCORES";
+                
+                if (!isFlipped) {
+                    // Blanked out / disabled until question card is turned over to reveal the answer (2.5x larger text)
+                    actionBar.innerHTML = `
+                        <button type="button" disabled
+                            class="w-full h-16 sm:h-20 rounded-2xl bg-slate-100 border border-slate-200/90 text-slate-400 font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider font-game shadow-2xs opacity-50 cursor-not-allowed flex items-center justify-center gap-3 sm:gap-4 transition-all select-none"
+                            title="Reveal the answer before confirming scores">
+                            <i data-lucide="lock" class="w-7 h-7 sm:w-9 sm:h-9 opacity-60 flex-none"></i>
+                            <span>${confirmText}</span>
+                        </button>
+                    `;
+                } else {
+                    actionBar.innerHTML = `
+                        <button type="button" onclick="confirmRoundScores()"
+                            class="w-full h-16 sm:h-20 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider font-game shadow-md active:scale-95 transition-all flex items-center justify-center gap-3 sm:gap-4 ${correctCount > 0 ? 'ring-2 ring-[#06b6d4]/40 scale-[1.01]' : 'opacity-90'}">
+                            <i data-lucide="check-circle" class="w-7 h-7 sm:w-9 sm:h-9 flex-none"></i>
+                            <span>${confirmText}${correctCount > 0 ? ` (${correctCount})` : ''}</span>
+                        </button>
+                    `;
+                }
+            } else {
+                actionBar.innerHTML = `
+                    <div onclick="nextCard()" class="w-full h-16 sm:h-20 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-center text-lg sm:text-xl md:text-2xl font-black text-emerald-800 font-game flex items-center justify-center truncate shadow-sm animate-fade-in cursor-pointer select-none" title="${roundFeedbackMessage}">
+                        ${roundFeedbackMessage}
+                    </div>
+                `;
+            }
+
+            lucide.createIcons();
+        }
+
+        function confirmRoundScores() {
+            if (roundConfirmed || !isFlipped) return;
+            stopRoundTimer();
+
+            const t = I18N[currentLanguage] || I18N.en;
+            const isSpanish = currentLanguage === 'es';
+            const eligibleTeams = (isSuddenDeath && suddenDeathTeamIds.length > 0)
+                ? teams.filter(tm => suddenDeathTeamIds.includes(tm.id))
+                : teams;
+            const totalTeams = eligibleTeams.length;
+            const correctTeams = eligibleTeams.filter(tm => roundChoices[tm.id] === 'correct');
+            const correctCount = correctTeams.length;
+
+            if (isSuddenDeath) {
+                // ================= SUDDEN DEATH TIE-BREAKER MODE =================
+                if (correctCount === 1) {
+                    const winner = correctTeams[0];
+                    winner.score += 1;
+                    isSuddenDeath = false;
+                    suddenDeathTeamIds = [];
+                    playWinFanfare();
+                    triggerConfetti();
+                    roundFeedbackMessage = isSpanish
+                        ? `⚡ ¡${winner.name} gana la Muerte Súbita!`
+                        : `⚡ ${winner.name} wins Sudden Death!`;
+                    roundConfirmed = true;
+                    saveTeamsToStorage();
+                    updateSuddenDeathBadgeUI();
+                    renderLiveScoreboard();
+                    setTimeout(() => showWinnerModal([winner]), 650);
+                    return;
+                } else if (correctCount > 1 && correctCount < totalTeams) {
+                    // Narrow sudden death down to the subset of tied teams who got it right
+                    suddenDeathTeamIds = correctTeams.map(tm => tm.id);
+                    const namesList = correctTeams.map(tm => tm.name).join(' & ');
+                    playTone(680, 'triangle', 0.14, 0.15);
+                    roundFeedbackMessage = (t.suddenDeathContinueMsg || '⚡ STILL TIED! Next Sudden Death card for {names}!')
+                        .replace('{names}', namesList);
+                } else {
+                    // Either all tied teams got it right or none got it right -> Sudden Death continues!
+                    const namesList = eligibleTeams.map(tm => tm.name).join(' & ');
+                    playNeutralRoundSfx();
+                    roundFeedbackMessage = (t.suddenDeathContinueMsg || '⚡ STILL TIED! Next Sudden Death card for {names}!')
+                        .replace('{names}', namesList);
+                }
+
+                roundConfirmed = true;
+                saveTeamsToStorage();
+                updateSuddenDeathBadgeUI();
+                renderLiveScoreboard();
+                if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+                autoAdvanceTimer = setTimeout(() => {
+                    nextCard();
+                    autoAdvanceTimer = null;
+                }, 1500);
+                return;
+            }
+
+            if (isPotRolloverEnabled) {
+                // ================= HOUSE RULE: POT ROLLOVER MODE =================
+                if (correctCount === totalTeams && totalTeams > 1) {
+                    // EVERYONE CORRECT -> 0 points! Pot increases by 1
+                    pot += 1;
+                    playNeutralRoundSfx();
+                    roundFeedbackMessage = isSpanish
+                        ? `¡Todos acertaron! 0 puntos • ¡Bote sube a ${pot} ptos!`
+                        : `Everyone got it right! 0 pts • Pot rolls over to ${pot} pts!`;
+                } else if (correctCount === 0) {
+                    // NO ONE CORRECT -> 0 points! Pot increases by 1
+                    pot += 1;
+                    playNeutralRoundSfx();
+                    roundFeedbackMessage = isSpanish
+                        ? `¡Nadie acertó! 0 puntos • ¡Bote sube a ${pot} ptos!`
+                        : `Nobody got it right! 0 pts • Pot rolls over to ${pot} pts!`;
+                } else {
+                    // SOME CORRECT -> Correct players win the current pot points!
+                    const ptsWon = pot;
+                    correctTeams.forEach(tm => {
+                        tm.score += ptsWon;
+                    });
+
+                    const namesList = correctTeams.map(tm => tm.name).join(' & ');
+                    const unit = ptsWon > 1 ? (isSpanish ? 'ptos' : 'pts') : (isSpanish ? 'pto' : 'pt');
+                    roundFeedbackMessage = isSpanish
+                        ? `¡${namesList} acertaron! +${ptsWon} ${unit} (Bote reiniciado)`
+                        : `${namesList} scored +${ptsWon} ${unit}! (Pot reset to 1)`;
+
+                    pot = 1;
+                    playPointSfx();
+                }
+            } else {
+                // ================= OFFICIAL STANDARD RULES (NO POT ROLLOVER) =================
+                if (correctCount === totalTeams && totalTeams > 1) {
+                    // EVERYONE CORRECT -> 0 points awarded to anyone!
+                    playNeutralRoundSfx();
+                    roundFeedbackMessage = isSpanish
+                        ? `¡Todos acertaron! 0 puntos`
+                        : `Everyone got it right! 0 pts`;
+                } else if (correctCount === 0) {
+                    // NO ONE CORRECT -> 0 points awarded to anyone!
+                    playNeutralRoundSfx();
+                    roundFeedbackMessage = isSpanish
+                        ? `¡Nadie acertó! 0 puntos`
+                        : `Nobody got it right! 0 pts`;
+                } else {
+                    // SOME CORRECT -> Each correct team scores 1 point!
+                    correctTeams.forEach(tm => {
+                        tm.score += 1;
+                    });
+
+                    const namesList = correctTeams.map(tm => tm.name).join(' & ');
+                    const unit = isSpanish ? 'pto' : 'pt';
+                    roundFeedbackMessage = isSpanish
+                        ? `¡${namesList} acertaron! +1 ${unit}`
+                        : `${namesList} scored +1 ${unit}!`;
+
+                    playPointSfx();
+                }
+            }
+
+            roundConfirmed = true;
+            saveTeamsToStorage();
+
+            // Check win condition if targetScore > 0 (not in Endless Free Play)
+            if (targetScore > 0 && correctCount > 0) {
+                const teamsAtTarget = teams.filter(tm => tm.score >= targetScore);
+                if (teamsAtTarget.length > 0) {
+                    const maxReached = Math.max(...teamsAtTarget.map(tm => tm.score));
+                    const topTiedTeams = teamsAtTarget.filter(tm => tm.score === maxReached);
+
+                    if (topTiedTeams.length === 1) {
+                        // Outright winner!
+                        playWinFanfare();
+                        triggerConfetti();
+                        renderLiveScoreboard();
+                        if (autoAdvanceTimer) {
+                            clearTimeout(autoAdvanceTimer);
+                            autoAdvanceTimer = null;
+                        }
+                        setTimeout(() => {
+                            showWinnerModal(topTiedTeams);
+                        }, 650);
+                        return;
+                    } else if (topTiedTeams.length > 1) {
+                        // Multiple teams tied at the highest winning score -> Trigger Sudden Death!
+                        isSuddenDeath = true;
+                        suddenDeathTeamIds = topTiedTeams.map(tm => tm.id);
+                        const tiedNames = topTiedTeams.map(tm => tm.name).join(' & ');
+                        roundFeedbackMessage = (t.suddenDeathTieMsg || '⚡ TIE AT {score} PTS! Sudden Death between {names}!')
+                            .replace('{score}', maxReached)
+                            .replace('{names}', tiedNames);
+                        playTone(523.25, 'triangle', 0.14, 0.18);
+                        setTimeout(() => playTone(659.25, 'triangle', 0.2, 0.2), 130);
+                        updateSuddenDeathBadgeUI();
+                        renderLiveScoreboard();
+                        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+                        autoAdvanceTimer = setTimeout(() => {
+                            nextCard();
+                            autoAdvanceTimer = null;
+                        }, 1800);
+                        return;
+                    }
+                }
+            }
+
+            renderLiveScoreboard();
+
+            // Automatically advance to the next question
+            if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = setTimeout(() => {
+                nextCard();
+                autoAdvanceTimer = null;
+            }, 1200);
+        }
+
+        function showWinnerModal(winningTeams) {
+            const modal = document.getElementById('winnerModal');
+            const titleEl = document.getElementById('winnerModalTitle');
+            const subEl = document.getElementById('winnerModalSubtitle');
+            const badgesEl = document.getElementById('winnerTeamsBadges');
+            if (!modal) return;
+
+            const t = I18N[currentLanguage] || I18N.en;
+            const maxScore = Math.max(...winningTeams.map(w => w.score));
+            const topWinners = winningTeams.filter(w => w.score === maxScore);
+
+            if (titleEl) {
+                titleEl.innerText = topWinners.length > 1 ? t.winnerTitleTie : t.winnerTitle;
+            }
+            if (subEl) {
+                const isEs = currentLanguage === 'es';
+                subEl.innerText = isEs
+                    ? `¡Alcanzó ${maxScore} puntos y ganó la partida!`
+                    : `Reached ${maxScore} points and won the match!`;
+            }
+            if (badgesEl) {
+                badgesEl.innerHTML = topWinners.map(w => {
+                    const textCol = getContrastColor(w.hex);
+                    return `
+                        <div class="px-4 py-2 rounded-2xl font-game font-black text-base shadow-md flex items-center gap-2"
+                             style="background-color: ${w.hex}; color: ${textCol}; border: 2px solid rgba(15,23,42,0.12);">
+                            <span>${escapeHtml(w.name)}</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-black/15 text-xs">${w.score} pts</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            modal.classList.remove('hidden');
+            triggerConfetti();
+            lucide.createIcons();
+        }
+
+        function playAgainFromWinnerModal() {
+            const modal = document.getElementById('winnerModal');
+            if (modal) modal.classList.add('hidden');
+            resetMatchScores();
+            nextCard();
+        }
+
+        function keepPlayingFromWinnerModal() {
+            const modal = document.getElementById('winnerModal');
+            if (modal) modal.classList.add('hidden');
+            // Switch to Free Play (∞) so they can keep playing without re-triggering the winner modal every round
+            setTargetScore(0);
+            nextCard();
+        }
+
+        function resetMatchScores() {
+            teams.forEach(t => t.score = 0);
+            pot = 1;
+            isSuddenDeath = false;
+            suddenDeathTeamIds = [];
+            stopRoundTimer();
+            resetRoundState();
+            saveTeamsToStorage();
+            updateSuddenDeathBadgeUI();
+            renderLiveScoreboard();
+            toggleMenu(false);
+            playTone(400, 'sine', 0.1, 0.1);
+        }
+
+        // ================= DRAWER & UTILITIES =================
+        function toggleMenu(show) {
+            const overlay = document.getElementById('sideMenuOverlay');
+            if (show) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 200);
+            }
+        }
+
+        function triggerConfetti() {
+            try {
+                confetti({
+                    particleCount: 50,
+                    spread: 70,
+                    origin: { y: 0.65 },
+                    colors: ['#E61C24', '#007AC2', '#FFD100', '#009E49', '#702082', '#E83D84']
+                });
+            } catch (e) { }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const activeTag = document.activeElement ? document.activeElement.tagName : '';
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+
+            const wizardModal = document.getElementById('wizardModal');
+            const sideMenu = document.getElementById('sideMenuOverlay');
+            const winnerModal = document.getElementById('winnerModal');
+            const guideModal = document.getElementById('howToPlayModal');
+            const isModalOpen = (wizardModal && !wizardModal.classList.contains('hidden')) ||
+                (sideMenu && !sideMenu.classList.contains('hidden')) ||
+                (winnerModal && !winnerModal.classList.contains('hidden')) ||
+                (guideModal && !guideModal.classList.contains('hidden'));
+            if (isModalOpen) return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipCard();
+            } else if (e.code === 'ArrowRight') {
+                nextCard();
+            } else if (e.code === 'ArrowLeft') {
+                prevCard();
+            } else if (e.code === 'KeyS') {
+                speakCurrentCard(false);
+            }
+        });
+
+        // ================= TOUCH SWIPE GESTURES ON CARD STAGE =================
+        (function initTouchSwipe() {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            const stage = document.getElementById('cardStageContainer');
+            if (!stage) return;
+
+            stage.addEventListener('touchstart', (e) => {
+                if (!e.changedTouches || e.changedTouches.length === 0) return;
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            stage.addEventListener('touchend', (e) => {
+                if (!e.changedTouches || e.changedTouches.length === 0) return;
+                const dx = e.changedTouches[0].screenX - touchStartX;
+                const dy = e.changedTouches[0].screenY - touchStartY;
+                if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                    if (dx < 0) nextCard();
+                    else prevCard();
+                }
+            }, { passive: true });
+        })();
+
+        // ================= INITIALIZATION =================
+        window.onload = function () {
+            // Load saved custom questions if imported previously for the current database version
+            try {
+                const savedCustomQuestions = localStorage.getItem('colourbrain_custom_questions');
+                const savedVersion = localStorage.getItem('colourbrain_custom_questions_version');
+                const currentDbVersion = window.QUESTIONS_VERSION || APP_VERSION;
+                if (savedCustomQuestions && savedVersion === currentDbVersion) {
+                    const parsedQ = JSON.parse(savedCustomQuestions);
+                    if (Array.isArray(parsedQ) && parsedQ.length > 0) {
+                        QUESTIONS_MASTER = parsedQ;
+                        window.QUESTIONS_MASTER = parsedQ;
+                    }
+                } else if (savedCustomQuestions && savedVersion !== currentDbVersion) {
+                    // Clear stale custom cache from older versions so updated questions.js takes effect
+                    localStorage.removeItem('colourbrain_custom_questions');
+                    localStorage.removeItem('colourbrain_custom_questions_version');
+                }
+            } catch (e) { }
+
+            updateResetDeckButtonVisibility();
+            loadTeamsFromStorage();
+            loadSettingsFromStorage();
+            applyLanguageToUI();
+            syncPlayerThemeColor();
+            openWizard(1);
+            lucide.createIcons();
+
+            // Register Service Worker for offline PWA support when served over HTTP/HTTPS
+            if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.protocol === 'http:')) {
+                navigator.serviceWorker.register('./sw.js').catch(() => { });
+            }
+        };
+    </script>
+</body>
+
+</html>
