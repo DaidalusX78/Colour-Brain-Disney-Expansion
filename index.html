@@ -1597,8 +1597,11 @@
                 const storedTimer = localStorage.getItem('colourbrain_round_timer_enabled');
                 isRoundTimerEnabled = storedTimer === 'true';
 
-                const storedVoice = localStorage.getItem('colourbrain_auto_read_aloud');
-                isAutoReadAloudEnabled = storedVoice === 'true';
+                // Auto Read-Aloud is turned off by default
+                isAutoReadAloudEnabled = false;
+                try {
+                    localStorage.setItem('colourbrain_auto_read_aloud', 'false');
+                } catch (e) { }
 
                 const storedSeen = localStorage.getItem('colourbrain_seen_card_ids');
                 if (storedSeen) {
@@ -3387,6 +3390,7 @@
             } catch (e) { }
 
             updateResetDeckButtonVisibility();
+            stopSpeech();
             loadTeamsFromStorage();
             loadSettingsFromStorage();
             applyLanguageToUI();
