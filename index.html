@@ -121,7 +121,7 @@
                 <h1
                     class="text-sm font-extrabold font-game tracking-wider uppercase flex items-center gap-1.5 leading-none text-slate-900">
                     <span>COLOUR<span class="text-[#06b6d4]">BRAIN</span></span>
-                    <span class="text-xs font-mono font-medium text-slate-400" title="App Version">v1.11.9</span>
+                    <span id="appVersionBadge" onclick="handleSecretVersionTap()" class="text-xs font-mono font-medium text-slate-400 cursor-pointer select-none" title="App Version (Tap 5x for Developer tools)">v1.11.9</span>
                 </h1>
                 <p class="text-xs text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
             </div>
@@ -504,44 +504,16 @@
                     Reset Scores
                 </button>
 
-                <!-- Question Ingestion: Google Sheets Sync + CSV Import & Export -->
-                <div class="space-y-2 pt-2 border-t border-slate-200">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Question Data
-                            Management</label>
-                        <button type="button" onclick="resetSeenCardsHistory()"
-                            class="text-xs font-bold text-[#0891b2] hover:underline"
-                            title="Reset unseen-first smart shuffle memory">
-                            <span id="menuResetSeenLabel">Reset Seen</span>
-                        </button>
-                    </div>
-                    <button id="syncGSheetsBtn" type="button" onclick="syncFromGoogleSheet()"
-                        class="w-full py-2 px-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-800 active:scale-95 transition-all shadow-2xs"
-                        title="Sync live questions directly from the master Google Sheet">
-                        <i id="syncGSheetsIcon" data-lucide="cloud-download" class="w-3.5 h-3.5 text-emerald-600"></i>
-                        <span id="syncGSheetsLabel">Sync from Google Sheet</span>
-                    </button>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="exportQuestionsToCSV()"
-                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all"
-                            title="Export questions as CSV file">
-                            <i data-lucide="download" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
-                            <span>Export CSV</span>
-                        </button>
-                        <button onclick="document.getElementById('csvFileInput').click()"
-                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all"
-                            title="Import questions from CSV file">
-                            <i data-lucide="upload" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
-                            <span>Import CSV</span>
-                        </button>
-                    </div>
-                    <input type="file" id="csvFileInput" accept=".csv" class="hidden"
-                        onchange="importQuestionsFromCSV(event)">
-                    <button id="menuResetDeckBtn" onclick="resetCustomQuestions()"
-                        class="hidden w-full py-1.5 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-700 active:scale-95 transition-all"
-                        title="Restore default built-in questions">
-                        <i data-lucide="refresh-cw" class="w-3 h-3 text-[#06b6d4]"></i>
-                        <span id="menuResetDeckLabel">Restore Default Deck</span>
+                <!-- Admin / Developer Question Data Tools (Hidden unless unlocked via ?admin=true or tapping version 5x) -->
+                <div id="menuAdminToolsWrapper" class="hidden pt-2 border-t border-slate-200">
+                    <button id="menuDeckToolsBtn" type="button" onclick="openDeckToolsModal()"
+                        class="w-full py-2.5 px-3 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 font-bold text-xs uppercase font-game flex items-center justify-between transition-all shadow-2xs active:scale-95"
+                        title="Manage Google Sheets Sync and CSV Import/Export">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="database" class="w-4 h-4 text-amber-600"></i>
+                            <span id="menuDeckToolsLabel">Question Data Tools</span>
+                        </div>
+                        <span class="text-[10px] bg-amber-200/80 text-amber-800 font-mono px-1.5 py-0.5 rounded-full font-bold">Admin</span>
                     </button>
                 </div>
 
@@ -560,7 +532,7 @@
                             <span id="menuLegalNoticeLabel">Legal & Fan Notice</span>
                         </button>
                     </div>
-                    <div class="text-xs text-slate-400 font-mono">
+                    <div class="text-xs text-slate-400 font-mono cursor-pointer select-none" onclick="handleSecretVersionTap()" title="Tap 5x for Developer tools">
                         Disney Expansion Pack • v1.11.9
                     </div>
                 </div>
@@ -1016,6 +988,139 @@
         </div>
     </div>
 
+    <!-- ================= QUESTION DATA & DECK TOOLS MODAL (ADMIN / DEVELOPER) ================= -->
+    <div id="deckToolsModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="closeDeckToolsModal()">
+        <div class="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 text-slate-800 shadow-2xl max-h-[92vh] flex flex-col justify-between overflow-hidden"
+            onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 flex-none">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center flex-none">
+                        <i data-lucide="database" class="w-5 h-5 text-amber-600"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="deckToolsModalTitle" class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
+                                Question Data Tools
+                            </h2>
+                            <span class="text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-mono font-bold px-1.5 py-0.5 rounded-full uppercase">Admin</span>
+                        </div>
+                        <p id="deckToolsModalSubtitle" class="text-xs text-slate-500 mt-0.5">
+                            Google Sheets sync & CSV deck management
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeDeckToolsModal()"
+                    class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
+                <!-- Deck Status Card -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-game">Deck Status</span>
+                        <span id="dtTotalCardsBadge" class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#06b6d4]/15 text-[#0891b2] font-mono">
+                            <span id="dtTotalCards">65</span> cards
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/70">
+                        <span class="text-slate-500">Source:</span>
+                        <span id="dtDeckSource" class="font-bold text-slate-700">Built-in Deck (questions.js)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/70">
+                        <span class="text-slate-500">Unseen Memory:</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-slate-700"><span id="dtSeenCards">0</span> seen</span>
+                            <button id="menuResetSeenLabel" type="button" onclick="resetSeenCardsHistory()"
+                                class="text-xs font-bold text-[#0891b2] hover:underline"
+                                title="Reset unseen memory to shuffle all cards afresh">
+                                Reset Seen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Sheets Live Sync -->
+                <div class="p-3.5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-900 font-game">Google Sheets Live Sync</span>
+                        </div>
+                        <a href="https://docs.google.com/spreadsheets/d/14GnJvQRl74nkzaIuPekk7-UJrByNrAW9DcK_l8GHnO8/edit#gid=1632021490"
+                            target="_blank" rel="noopener noreferrer"
+                            class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 hover:underline flex items-center gap-0.5"
+                            title="Open Google Sheet in new tab">
+                            Open Sheet <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-normal">
+                        Fetches the latest Disney questions directly from your public view-only spreadsheet.
+                    </p>
+                    <button id="syncGSheetsBtn" type="button" onclick="syncFromGoogleSheet()"
+                        class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase font-game flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs">
+                        <i id="syncGSheetsIcon" data-lucide="cloud-download" class="w-4 h-4"></i>
+                        <span id="syncGSheetsLabel">Sync from Google Sheet</span>
+                    </button>
+                </div>
+
+                <!-- CSV Import & Export -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2.5">
+                    <div class="flex items-center gap-1.5">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-slate-600"></i>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 font-game">CSV Backup & Import</span>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-normal">
+                        Export an offline CSV backup or import custom question files without internet.
+                    </p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="exportQuestionsToCSV()"
+                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all shadow-2xs"
+                            title="Export active questions as a CSV file">
+                            <i data-lucide="download" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span>Export CSV</span>
+                        </button>
+                        <button type="button" onclick="document.getElementById('csvFileInput').click()"
+                            class="py-2 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 active:scale-95 transition-all shadow-2xs"
+                            title="Upload and import questions from a CSV file">
+                            <i data-lucide="upload" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
+                            <span>Import CSV</span>
+                        </button>
+                    </div>
+                    <input type="file" id="csvFileInput" accept=".csv" class="hidden"
+                        onchange="importQuestionsFromCSV(event)">
+                </div>
+
+                <!-- Restore Default Built-in Deck (visible only if custom loaded) -->
+                <button id="menuResetDeckBtn" type="button" onclick="resetCustomQuestions()"
+                    class="hidden w-full py-2 px-3 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                    title="Restore default built-in questions">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-rose-600"></i>
+                    <span id="menuResetDeckLabel">Restore Default Built-in Deck</span>
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="pt-3 border-t border-slate-200 flex items-center justify-between gap-3 flex-none">
+                <button type="button" onclick="toggleAdminMode(false)"
+                    class="text-xs text-slate-400 hover:text-slate-600 hover:underline inline-flex items-center gap-1 py-1"
+                    title="Hide Admin button from drawer menu">
+                    <i data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+                    <span>Exit Admin Mode</span>
+                </button>
+                <button type="button" onclick="closeDeckToolsModal()"
+                    class="py-2.5 px-6 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-xs uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Audio Synthesizer & Deck Engine -->
     <script>
         // ================= SOUND SYNTHESIZER (Web Audio API) =================
@@ -1248,7 +1353,10 @@
                 confirmScoresRequiredTooltip: "Confirm scores before moving to the next question",
                 tapNextToContinue: "NEXT →",
                 toastFlipFirst: "Reveal the answer and confirm scores first!",
-                toastConfirmFirst: "Tap CONFIRM SCORES to lock in points before NEXT!"
+                toastConfirmFirst: "Tap CONFIRM SCORES to lock in points before NEXT!",
+                deckToolsBtn: "Question Data Tools",
+                deckToolsTitle: "Question Data Tools",
+                deckToolsSubtitle: "Google Sheets sync & CSV deck management"
             },
             es: {
                 deckSubtitle: "Pack de Expansión Disney",
@@ -1348,7 +1456,10 @@
                 confirmScoresRequiredTooltip: "Confirma los puntos antes de pasar a la siguiente pregunta",
                 tapNextToContinue: "SIGUIENTE →",
                 toastFlipFirst: "¡Gira la carta y confirma los puntos primero!",
-                toastConfirmFirst: "¡Pulsa CONFIRMAR PUNTOS antes de continuar!"
+                toastConfirmFirst: "¡Pulsa CONFIRMAR PUNTOS antes de continuar!",
+                deckToolsBtn: "Herramientas de Preguntas",
+                deckToolsTitle: "Gestor de Preguntas",
+                deckToolsSubtitle: "Sincronización con Google Sheets y CSV"
             }
         };
 
@@ -1563,6 +1674,12 @@
             if (syncLbl) syncLbl.innerText = t.syncGSheetsBtn;
             const rstSeenLbl = document.getElementById('menuResetSeenLabel');
             if (rstSeenLbl) rstSeenLbl.innerText = t.resetSeenBtn;
+            const dtBtn = document.getElementById('menuDeckToolsLabel');
+            if (dtBtn) dtBtn.innerText = t.deckToolsBtn || "Question Data Tools";
+            const dtTitle = document.getElementById('deckToolsModalTitle');
+            if (dtTitle) dtTitle.innerText = t.deckToolsTitle || "Question Data Tools";
+            const dtSub = document.getElementById('deckToolsModalSubtitle');
+            if (dtSub) dtSub.innerText = t.deckToolsSubtitle || "Google Sheets sync & CSV deck management";
             const menuVoiceTitle = document.getElementById('menuVoiceTitle');
             if (menuVoiceTitle) menuVoiceTitle.innerText = t.voiceLabel;
             const menuVoiceSub = document.getElementById('menuVoiceSubtitle');
@@ -1781,6 +1898,7 @@
             saveSeenCardsToStorage();
             playTone(540, 'sine', 0.06, 0.1);
             setThemeAndDeck(selectedWizardDecks);
+            updateDeckToolsStatusUI();
         }
 
         function updateSeenCardsStatusUI() {
@@ -2150,6 +2268,95 @@
             }
         }
 
+        // ================= DEVELOPER & ADMIN TOOLS (DATA MANAGEMENT) =================
+        let isAdminMode = false;
+        let versionTapCount = 0;
+        let versionTapTimer = null;
+
+        function initAdminMode() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const hasAdminParam = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1' || urlParams.get('dev') === 'true';
+                if (hasAdminParam) {
+                    localStorage.setItem('colourbrain_admin_mode', 'true');
+                }
+                isAdminMode = localStorage.getItem('colourbrain_admin_mode') === 'true';
+            } catch (e) {
+                isAdminMode = false;
+            }
+            updateAdminModeUI();
+        }
+
+        function handleSecretVersionTap() {
+            versionTapCount++;
+            if (versionTapTimer) clearTimeout(versionTapTimer);
+            versionTapTimer = setTimeout(() => { versionTapCount = 0; }, 3000);
+
+            if (versionTapCount >= 5) {
+                versionTapCount = 0;
+                toggleAdminMode(!isAdminMode);
+            }
+        }
+
+        function toggleAdminMode(enable) {
+            isAdminMode = typeof enable === 'boolean' ? enable : !isAdminMode;
+            try {
+                localStorage.setItem('colourbrain_admin_mode', isAdminMode ? 'true' : 'false');
+            } catch (e) { }
+
+            updateAdminModeUI();
+
+            if (isAdminMode) {
+                playTone(587.33, 'triangle', 0.1, 0.12);
+                setTimeout(() => playTone(880, 'triangle', 0.15, 0.16), 110);
+                openDeckToolsModal();
+            } else {
+                playTone(400, 'sine', 0.08, 0.1);
+                closeDeckToolsModal();
+            }
+        }
+
+        function updateAdminModeUI() {
+            const wrapper = document.getElementById('menuAdminToolsWrapper');
+            if (wrapper) {
+                wrapper.classList.toggle('hidden', !isAdminMode);
+            }
+        }
+
+        function openDeckToolsModal() {
+            playTone(580, 'sine', 0.05, 0.08);
+            toggleMenu(false);
+            updateDeckToolsStatusUI();
+            const modal = document.getElementById('deckToolsModal');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeDeckToolsModal() {
+            playTone(450, 'sine', 0.04, 0.06);
+            const modal = document.getElementById('deckToolsModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function updateDeckToolsStatusUI() {
+            const countEl = document.getElementById('dtTotalCards');
+            if (countEl) countEl.innerText = QUESTIONS_MASTER.length;
+
+            const sourceEl = document.getElementById('dtDeckSource');
+            const hasCustom = Boolean(localStorage.getItem('colourbrain_custom_questions'));
+            if (sourceEl) {
+                sourceEl.innerText = hasCustom
+                    ? (currentLanguage === 'es' ? 'Baraja Personalizada / Sincronizada' : 'Custom / Synced Deck')
+                    : (currentLanguage === 'es' ? 'Baraja Integrada (questions.js)' : 'Built-in Deck (questions.js)');
+                sourceEl.className = hasCustom ? "text-emerald-700 font-bold" : "text-slate-700 font-medium";
+            }
+
+            const seenCountEl = document.getElementById('dtSeenCards');
+            if (seenCountEl) seenCountEl.innerText = seenCardIds.size;
+
+            updateResetDeckButtonVisibility();
+        }
+
         // ================= CSV IMPORT & EXPORT ENGINE =================
         function updateResetDeckButtonVisibility() {
             const btn = document.getElementById('menuResetDeckBtn');
@@ -2171,6 +2378,7 @@
             window.QUESTIONS_MASTER = QUESTIONS_MASTER;
             updateResetDeckButtonVisibility();
             updateDeckCountsAndSelectionUI();
+            updateDeckToolsStatusUI();
             setThemeAndDeck(selectedWizardDecks);
             playTone(520, 'sine', 0.08, 0.1);
         }
@@ -2270,6 +2478,7 @@
             updateResetDeckButtonVisibility();
             updateDeckCountsAndSelectionUI();
             updateSeenCardsStatusUI();
+            updateDeckToolsStatusUI();
             setThemeAndDeck(selectedWizardDecks);
             playPointSfx();
 
@@ -3588,6 +3797,7 @@
             stopSpeech();
             loadTeamsFromStorage();
             loadSettingsFromStorage();
+            initAdminMode();
             applyLanguageToUI();
             syncPlayerThemeColor();
             openWizard(1);
