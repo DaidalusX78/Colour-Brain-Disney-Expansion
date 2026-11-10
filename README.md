@@ -2,7 +2,7 @@
 
 [![Deploy to GitHub Pages](https://github.com/DaidalusX78/Colour-Brain-Disney-Expansion/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/DaidalusX78/Colour-Brain-Disney-Expansion/actions/workflows/deploy-pages.yml)
 [![Live Demo](https://img.shields.io/badge/Play_Live_App-daidalusx78.github.io%2FColour--Brain--Disney--Expansion-06b6d4?style=flat&logo=googlechrome&logoColor=white)](https://daidalusx78.github.io/Colour-Brain-Disney-Expansion/)
-[![Version](https://img.shields.io/badge/Version-v1.11.8-702082.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.11.9-702082.svg)](CHANGELOG.md)
 [![PWA](https://img.shields.io/badge/PWA-Ready-10b981.svg)](manifest.json)
 [![Language](https://img.shields.io/badge/Language-English_%7C_Espa%C3%B1ol-E61C24.svg)](index.html)
 
