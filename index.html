@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#06b6d4">
     <link rel="manifest" href="manifest.json">
-    <!-- Version: v1.12.1 -->
+    <!-- Version: v1.11.8 -->
     <!-- Created by Marc Bailey (https://github.com/DaidalusX78) | Inspired by Colour Brain by Big Potato Games (https://bigpotato.com) -->
     <title>Colour Brain: Disney & Pixar Expansion Pack</title>
     <!-- Tailwind CSS -->
@@ -120,7 +120,7 @@
                 <h1
                     class="text-sm font-extrabold font-game tracking-wider uppercase flex items-center gap-1.5 leading-none text-slate-900">
                     <span>COLOUR<span class="text-[#06b6d4]">BRAIN</span></span>
-                    <span class="text-[10px] font-mono font-medium text-slate-400" title="App Version">v1.11.7</span>
+                    <span class="text-[10px] font-mono font-medium text-slate-400" title="App Version">v1.11.8</span>
                 </h1>
                 <p class="text-[10px] text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
             </div>
@@ -308,8 +308,7 @@
                     <span id="prevBtnLabel">PREVIOUS</span>
                 </button>
                 <button id="flipBtn" onclick="flipCard()"
-                    class="col-span-2 h-14 sm:h-16 rounded-2xl text-white font-black text-xs sm:text-sm uppercase tracking-wider font-game flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
-                    style="background-color: var(--player-theme-color, #06b6d4);">
+                    class="col-span-2 h-14 sm:h-16 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-xs sm:text-sm uppercase tracking-wider font-game flex items-center justify-center gap-2 shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
                     <i data-lucide="sparkles" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                     <span id="flipBtnLabel">ANSWER</span>
                 </button>
@@ -561,7 +560,7 @@
                         </button>
                     </div>
                     <div class="text-[10px] text-slate-400 font-mono">
-                        Disney Expansion Pack • v1.12.1
+                        Disney Expansion Pack • v1.11.8
                     </div>
                 </div>
             </div>
@@ -1621,7 +1620,7 @@
         }
 
         // ================= STATE MANAGEMENT =================
-        const APP_VERSION = 'v1.11.7';
+        const APP_VERSION = 'v1.11.8';
         const ALL_CATEGORY_KEYS = ['disneychannel', 'classic', 'pixar', 'lucasfilm', 'marvel'];
         let currentDeckKey = 'all';
         let selectedWizardDecks = ['all'];
@@ -2633,15 +2632,11 @@
                 }
             });
 
-            // Update Start Game button with total selected question count
+            // Update Start Game button
             const t = I18N[currentLanguage] || I18N.en;
             const startBtn = document.getElementById('wizStartGameBtn');
             if (startBtn) {
-                let selectedTotal = counts.all;
-                if (!isAllSelected) {
-                    selectedTotal = selectedWizardDecks.reduce((acc, k) => acc + (counts[k] || 0), 0);
-                }
-                startBtn.innerText = `${t.wizStartGame} (${selectedTotal})`;
+                startBtn.innerText = t.wizStartGame;
             }
         }
 

@@ -1,8 +1,7 @@
-const CACHE_NAME = 'colourbrain-disney-v1.12.1';
+const CACHE_NAME = 'colourbrain-disney-v1.11.8';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './colourbrain_disney_expansion_pack_v1_11_7.html',
   './questions.js',
   './manifest.json',
   './assets/silhouettes/mickey_silhouette.svg',
