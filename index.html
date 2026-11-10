@@ -158,6 +158,15 @@
         </div>
     </header>
 
+    <!-- Floating Game Notification Toast -->
+    <div id="gameToast"
+        class="fixed top-14 sm:top-16 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 -translate-y-2 max-w-[90vw]">
+        <div class="px-4 py-2 rounded-2xl bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-black font-game shadow-xl border border-slate-700/60 flex items-center gap-2">
+            <i id="gameToastIcon" data-lucide="alert-circle" class="w-4 h-4 text-amber-400 flex-none"></i>
+            <span id="gameToastMsg">Confirm scores before proceeding</span>
+        </div>
+    </div>
+
     <!-- ================= MAIN GAME ARENA (LOCKED VIEWPORT) ================= -->
     <main id="gameMain"
         class="flex-1 w-full max-w-4xl mx-auto px-3 py-1 sm:py-2 flex flex-col items-center justify-between gap-1.5 sm:gap-2.5 overflow-hidden min-h-0">
@@ -1235,7 +1244,11 @@
                 disclaimerTrademarks: "<strong>Trademark & Copyright Attribution:</strong> <em>Colour Brain</em> is a registered trademark of Big Potato Games Ltd. All Disney and Pixar characters, titles, logos, and related marks are copyright and trademarks of Disney Enterprises, Inc. and its licensors.",
                 disclaimerNonCommercial: "<strong>Non-Commercial:</strong> This companion is 100% free, open-source, and non-monetized. It features no advertisements, tracking, in-app purchases, or donation links.",
                 disclaimerRequiresBase: "<strong>Requires Base Game:</strong> This tool is an auxiliary prompt generator only and is not a standalone game. It requires the official physical <em>Colour Brain: Disney Edition</em> board game and cards to play.",
-                disclaimerCloseBtn: "Close Notice"
+                disclaimerCloseBtn: "Close Notice",
+                confirmScoresRequiredTooltip: "Confirm scores before moving to the next question",
+                tapNextToContinue: "NEXT →",
+                toastFlipFirst: "Reveal the answer and confirm scores first!",
+                toastConfirmFirst: "Tap CONFIRM SCORES to lock in points before NEXT!"
             },
             es: {
                 deckSubtitle: "Pack de Expansión Disney",
@@ -1331,7 +1344,11 @@
                 disclaimerTrademarks: "<strong>Marcas Registradas y Derechos de Autor:</strong> <em>Colour Brain</em> es una marca registrada de Big Potato Games Ltd. Todos los personajes, títulos, logotipos y marcas relacionadas de Disney y Pixar son marcas registradas y propiedad de Disney Enterprises, Inc. y sus licenciantes.",
                 disclaimerNonCommercial: "<strong>No Comercial:</strong> Este complemento es 100% gratuito, de código abierto y no monetizado. No incluye publicidad, seguimiento, compras dentro de la app ni enlaces de donación.",
                 disclaimerRequiresBase: "<strong>Requiere el Juego Base:</strong> Esta herramienta es un generador auxiliar de preguntas y no un juego independiente. Requiere el juego de mesa físico oficial <em>Colour Brain: Disney Edition</em> y sus cartas para jugar.",
-                disclaimerCloseBtn: "Cerrar Aviso"
+                disclaimerCloseBtn: "Cerrar Aviso",
+                confirmScoresRequiredTooltip: "Confirma los puntos antes de pasar a la siguiente pregunta",
+                tapNextToContinue: "SIGUIENTE →",
+                toastFlipFirst: "¡Gira la carta y confirma los puntos primero!",
+                toastConfirmFirst: "¡Pulsa CONFIRMAR PUNTOS antes de continuar!"
             }
         };
 
@@ -3020,7 +3037,57 @@
             }
         }
 
-        function nextCard() {
+        // ================= NOTIFICATION TOAST =================
+        let toastTimeout = null;
+        function showToast(message, icon = 'alert-circle', colorClass = 'text-amber-400') {
+            const toast = document.getElementById('gameToast');
+            const msgEl = document.getElementById('gameToastMsg');
+            const iconEl = document.getElementById('gameToastIcon');
+            if (!toast || !msgEl) return;
+
+            msgEl.innerText = message;
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', icon);
+                iconEl.className = `w-4 h-4 ${colorClass} flex-none`;
+                lucide.createIcons();
+            }
+
+            toast.classList.remove('opacity-0', '-translate-y-2', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-2', 'pointer-events-none');
+                toastTimeout = null;
+            }, 2200);
+        }
+
+        function showConfirmScoreRequiredAlert() {
+            playTone(320, 'sine', 0.08, 0.12);
+            const t = I18N[currentLanguage] || I18N.en;
+            if (!isFlipped) {
+                showToast(t.toastFlipFirst || 'Reveal the answer and confirm scores first!', 'lock', 'text-amber-400');
+                const flipBtn = document.getElementById('flipBtn');
+                if (flipBtn) {
+                    flipBtn.classList.add('ring-4', 'ring-amber-400', 'scale-105');
+                    setTimeout(() => flipBtn.classList.remove('ring-4', 'ring-amber-400', 'scale-105'), 600);
+                }
+            } else {
+                showToast(t.toastConfirmFirst || 'Tap CONFIRM SCORES to lock in points before NEXT!', 'check-circle', 'text-cyan-400');
+                const confirmBtn = document.querySelector('#scoringActionBar button');
+                if (confirmBtn) {
+                    confirmBtn.classList.add('ring-4', 'ring-amber-400', 'scale-105');
+                    setTimeout(() => confirmBtn.classList.remove('ring-4', 'ring-amber-400', 'scale-105'), 600);
+                }
+            }
+        }
+
+        function nextCard(force = false) {
+            if (!force && !roundConfirmed) {
+                showConfirmScoreRequiredAlert();
+                return;
+            }
             if (autoAdvanceTimer) {
                 clearTimeout(autoAdvanceTimer);
                 autoAdvanceTimer = null;
@@ -3156,6 +3223,21 @@
                 list.appendChild(box);
             });
 
+            // Dynamic Next Button visual lock based on score confirmation
+            const nextBtn = document.getElementById('nextBtn');
+            const nextLabel = document.getElementById('nextBtnLabel');
+            if (nextBtn) {
+                if (!roundConfirmed) {
+                    nextBtn.className = "col-span-1 h-14 sm:h-16 rounded-2xl bg-slate-100/90 text-slate-400 flex items-center justify-center font-black text-xs sm:text-sm uppercase tracking-wider font-game transition-all border border-slate-200/90 opacity-45 cursor-not-allowed select-none";
+                    nextBtn.title = t.confirmScoresRequiredTooltip || "Confirm scores before moving to the next question";
+                    if (nextLabel) nextLabel.innerText = t.nextBtn || "NEXT";
+                } else {
+                    nextBtn.className = "col-span-1 h-14 sm:h-16 rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white flex items-center justify-center font-black text-xs sm:text-sm uppercase tracking-wider font-game transition-all shadow-md shadow-emerald-500/25 border border-emerald-600 cursor-pointer animate-pulse";
+                    nextBtn.title = t.nextBtn || "Next Question";
+                    if (nextLabel) nextLabel.innerText = `${t.nextBtn || "NEXT"} →`;
+                }
+            }
+
             // Bottom Action Bar: Confirm Button / Round Feedback
             const actionBar = document.getElementById('scoringActionBar');
             if (!actionBar) return;
@@ -3185,8 +3267,10 @@
                 }
             } else {
                 actionBar.innerHTML = `
-                    <div onclick="nextCard()" class="w-full h-16 sm:h-20 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-center text-lg sm:text-xl md:text-2xl font-black text-emerald-800 font-game flex items-center justify-center truncate shadow-sm animate-fade-in cursor-pointer select-none" title="${roundFeedbackMessage}">
-                        ${roundFeedbackMessage}
+                    <div onclick="nextCard()" class="w-full h-16 sm:h-20 px-3 sm:px-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-400 text-center text-sm sm:text-lg md:text-xl font-black text-emerald-800 font-game flex items-center justify-center gap-2 truncate shadow-sm animate-fade-in cursor-pointer select-none transition-all active:scale-[0.99]" title="${roundFeedbackMessage}">
+                        <i data-lucide="arrow-right-circle" class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 flex-none"></i>
+                        <span class="truncate">${roundFeedbackMessage}</span>
+                        <span class="text-xs sm:text-sm font-bold text-emerald-600 ml-1 flex-none">• ${t.tapNextToContinue || "NEXT →"}</span>
                     </div>
                 `;
             }
@@ -3244,11 +3328,10 @@
                 saveTeamsToStorage();
                 updateSuddenDeathBadgeUI();
                 renderLiveScoreboard();
-                if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-                autoAdvanceTimer = setTimeout(() => {
-                    nextCard();
+                if (autoAdvanceTimer) {
+                    clearTimeout(autoAdvanceTimer);
                     autoAdvanceTimer = null;
-                }, 1500);
+                }
                 return;
             }
 
@@ -3349,24 +3432,20 @@
                         setTimeout(() => playTone(659.25, 'triangle', 0.2, 0.2), 130);
                         updateSuddenDeathBadgeUI();
                         renderLiveScoreboard();
-                        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-                        autoAdvanceTimer = setTimeout(() => {
-                            nextCard();
+                        if (autoAdvanceTimer) {
+                            clearTimeout(autoAdvanceTimer);
                             autoAdvanceTimer = null;
-                        }, 1800);
+                        }
                         return;
                     }
                 }
             }
 
             renderLiveScoreboard();
-
-            // Automatically advance to the next question
-            if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-            autoAdvanceTimer = setTimeout(() => {
-                nextCard();
+            if (autoAdvanceTimer) {
+                clearTimeout(autoAdvanceTimer);
                 autoAdvanceTimer = null;
-            }, 1200);
+            }
         }
 
         function showWinnerModal(winningTeams) {
@@ -3411,7 +3490,7 @@
             const modal = document.getElementById('winnerModal');
             if (modal) modal.classList.add('hidden');
             resetMatchScores();
-            nextCard();
+            nextCard(true);
         }
 
         function keepPlayingFromWinnerModal() {
@@ -3419,7 +3498,7 @@
             if (modal) modal.classList.add('hidden');
             // Switch to Free Play (∞) so they can keep playing without re-triggering the winner modal every round
             setTargetScore(0);
-            nextCard();
+            nextCard(true);
         }
 
         function resetMatchScores() {

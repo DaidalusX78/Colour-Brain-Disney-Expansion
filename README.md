@@ -46,7 +46,7 @@ Bring modern Disney, Pixar, Disney Channel, Marvel, and Star Wars questions to y
 
 ## 🎮 How to Play
 
-Use this app alongside your physical Colour Brain colour cards (or digital swatches):
+Use this app alongside your physical Colour Brain colour cards:
 
 1. **Set Up Teams**: Choose 2–6 teams, pick your names and player colours in the setup wizard.
 2. **Read the Card**: Read the question aloud. The number inside the Mickey silhouette on the bottom right tells you how many colour cards each team must secretly place face-down (1, 2, or 3).
