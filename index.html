@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="theme-color" content="#06b6d4">
     <link rel="manifest" href="manifest.json">
     <!-- Version: v1.11.9 -->
@@ -68,6 +68,7 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         /* 3D Perspective Card Flip */
@@ -120,9 +121,9 @@
                 <h1
                     class="text-sm font-extrabold font-game tracking-wider uppercase flex items-center gap-1.5 leading-none text-slate-900">
                     <span>COLOUR<span class="text-[#06b6d4]">BRAIN</span></span>
-                    <span class="text-[10px] font-mono font-medium text-slate-400" title="App Version">v1.11.9</span>
+                    <span class="text-xs font-mono font-medium text-slate-400" title="App Version">v1.11.9</span>
                 </h1>
-                <p class="text-[10px] text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
+                <p class="text-xs text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
             </div>
         </div>
 
@@ -176,21 +177,21 @@
             <!-- Status Badges Row: Target Score, Sudden Death, Pot Rollover, & Round Timer -->
             <div class="flex flex-wrap items-center justify-center gap-1.5">
                 <span id="targetScoreBadge"
-                    class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-slate-200/80 text-slate-600 border border-slate-300/70 shadow-2xs">
+                    class="px-2 py-0.5 rounded-full text-xs font-black uppercase font-game bg-slate-200/80 text-slate-600 border border-slate-300/70 shadow-2xs">
                     First to 10
                 </span>
                 <span id="suddenDeathBadge"
-                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs animate-pulse">
+                    class="hidden px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs animate-pulse">
                     ⚡ SUDDEN DEATH
                 </span>
                 <span id="potBadge"
-                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs">
+                    class="hidden px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs">
                     Pot: 1 pt
                 </span>
                 <button id="roundTimerBadge" type="button" onclick="restartRoundTimer()"
-                    class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1 active:scale-95 transition-all"
+                    class="hidden px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1 active:scale-95 transition-all"
                     title="Click to reset 30s timer">
-                    <i data-lucide="timer" class="w-3 h-3"></i>
+                    <i data-lucide="timer" class="w-3.5 h-3.5"></i>
                     <span id="roundTimerText">30s</span>
                 </button>
                 <span id="scoreboardTitle" class="sr-only">SCORES</span>
@@ -403,7 +404,7 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuPotTitle" class="text-xs font-bold text-slate-800 block">Pot Rollover</span>
-                        <span id="menuPotSubtitle" class="text-[10px] text-slate-500 block leading-tight">House rule:
+                        <span id="menuPotSubtitle" class="text-xs text-slate-500 block leading-tight">House rule:
                             0-pt rounds
                             roll over</span>
                     </div>
@@ -419,7 +420,7 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuTimerTitle" class="text-xs font-bold text-slate-800 block">30s Round Timer</span>
-                        <span id="menuTimerSubtitle" class="text-[10px] text-slate-500 block leading-tight">Countdown clock per question</span>
+                        <span id="menuTimerSubtitle" class="text-xs text-slate-500 block leading-tight">Countdown clock per question</span>
                     </div>
                     <button id="menuTimerToggleBtn" type="button" onclick="toggleRoundTimer()"
                         class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -433,7 +434,7 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuVoiceTitle" class="text-xs font-bold text-slate-800 block">Auto Read-Aloud</span>
-                        <span id="menuVoiceSubtitle" class="text-[10px] text-slate-500 block leading-tight">Voice host reads cards (EN / ES)</span>
+                        <span id="menuVoiceSubtitle" class="text-xs text-slate-500 block leading-tight">Voice host reads cards (EN / ES)</span>
                     </div>
                     <button id="menuVoiceToggleBtn" type="button" onclick="toggleAutoReadAloud()"
                         class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -447,7 +448,7 @@
                 <div class="space-y-1.5 py-2 border-b border-slate-200">
                     <div class="flex items-center justify-between">
                         <span id="menuTargetScoreLabel" class="text-xs font-bold text-slate-800">Winning Target</span>
-                        <span id="menuSeenCardsStatus" class="text-[10px] font-mono text-slate-400" title="Unseen-First Smart Shuffle Progress">0/81 seen</span>
+                        <span id="menuSeenCardsStatus" class="text-xs font-mono text-slate-400" title="Unseen-First Smart Shuffle Progress">0/81 seen</span>
                     </div>
                     <div class="grid grid-cols-4 gap-1.5">
                         <button type="button" data-target="5" onclick="setTargetScore(5)"
@@ -462,8 +463,8 @@
                 </div>
 
                 <!-- Rules Quick Reminder (Dynamically Reflects Standard vs Pot Rollover Mode) -->
-                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-[11px] text-slate-600 space-y-1">
-                    <p id="menuRulesTitle" class="font-bold text-[#06b6d4] uppercase tracking-wider text-[10px]">How
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs text-slate-600 space-y-1">
+                    <p id="menuRulesTitle" class="font-bold text-[#06b6d4] uppercase tracking-wider text-xs">How
                         Points Work
                         (Official Rules)</p>
                     <div id="menuRulesList" class="space-y-1">
@@ -509,7 +510,7 @@
                         <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Question Data
                             Management</label>
                         <button type="button" onclick="resetSeenCardsHistory()"
-                            class="text-[10px] font-bold text-[#0891b2] hover:underline"
+                            class="text-xs font-bold text-[#0891b2] hover:underline"
                             title="Reset unseen-first smart shuffle memory">
                             <span id="menuResetSeenLabel">Reset Seen</span>
                         </button>
@@ -546,20 +547,20 @@
 
                 <!-- Credits & Version Info in Drawer -->
                 <div class="pt-3 border-t border-slate-200 text-center space-y-1">
-                    <div class="text-[11px] font-bold text-slate-700">
+                    <div class="text-xs font-bold text-slate-700">
                         Expansion created by <a href="https://github.com/DaidalusX78" target="_blank" rel="noopener noreferrer" class="text-[#0891b2] hover:underline">Marc Bailey</a>
                     </div>
-                    <div class="text-[10px] text-slate-500">
+                    <div class="text-xs text-slate-500">
                         Inspired by the awesome game from <a href="https://bigpotato.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-700 hover:text-[#0891b2]">Big Potato Games</a>
                     </div>
                     <div class="pt-0.5">
                         <button type="button" onclick="openDisclaimerModal()"
-                            class="text-[10px] font-semibold text-slate-500 hover:text-[#0891b2] inline-flex items-center justify-center gap-1 py-0.5 px-2 rounded-lg hover:bg-slate-100 transition-colors">
-                            <i data-lucide="scale" class="w-3 h-3 text-slate-400"></i>
+                            class="text-xs font-semibold text-slate-500 hover:text-[#0891b2] inline-flex items-center justify-center gap-1 py-0.5 px-2 rounded-lg hover:bg-slate-100 transition-colors">
+                            <i data-lucide="scale" class="w-3.5 h-3.5 text-slate-400"></i>
                             <span id="menuLegalNoticeLabel">Legal & Fan Notice</span>
                         </button>
                     </div>
-                    <div class="text-[10px] text-slate-400 font-mono">
+                    <div class="text-xs text-slate-400 font-mono">
                         Disney Expansion Pack • v1.11.9
                     </div>
                 </div>
@@ -664,7 +665,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-all">All</p>
-                                    <span id="deckCount-all" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">81</span>
+                                    <span id="deckCount-all" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">81</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate" id="wizDeckSub-all">Full expansion deck (all studios)</p>
                             </div>
@@ -681,7 +682,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-disneychannel">Disney Channel</p>
-                                    <span id="deckCount-disneychannel" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">26</span>
+                                    <span id="deckCount-disneychannel" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">26</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Descendants, Zombies, Vampirina, Electric Bloom</p>
                             </div>
@@ -698,7 +699,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-classic">Walt Disney Animation</p>
-                                    <span id="deckCount-classic" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">16</span>
+                                    <span id="deckCount-classic" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">16</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Encanto, Moana, Frozen II, Wish, Zootopia</p>
                             </div>
@@ -715,7 +716,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-pixar">Pixar Animation</p>
-                                    <span id="deckCount-pixar" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">17</span>
+                                    <span id="deckCount-pixar" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">17</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Inside Out 2, Turning Red, Elemental, Luca, Coco</p>
                             </div>
@@ -732,7 +733,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-lucasfilm">Lucasfilm</p>
-                                    <span id="deckCount-lucasfilm" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">10</span>
+                                    <span id="deckCount-lucasfilm" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">10</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Star Wars, The Mandalorian, Ahsoka</p>
                             </div>
@@ -749,7 +750,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
                                     <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-marvel">Marvel Studios</p>
-                                    <span id="deckCount-marvel" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 font-mono">12</span>
+                                    <span id="deckCount-marvel" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">12</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Captain America, Black Panther, Loki, Spider-Man</p>
                             </div>
@@ -938,13 +939,13 @@
                     class="w-full py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
                     <span id="guideGotItBtn">Got It, Let's Play!</span>
                 </button>
-                <div class="text-center text-[10px] text-slate-400 space-y-1">
+                <div class="text-center text-xs text-slate-400 space-y-1">
                     <div>
                         Expansion by <strong class="text-slate-600">Marc Bailey</strong> • Inspired by the awesome game from <strong class="text-slate-600">Big Potato Games</strong>
                     </div>
                     <div>
                         <button type="button" onclick="openDisclaimerModal()" class="text-[#0891b2] hover:underline inline-flex items-center gap-1 font-medium">
-                            <i data-lucide="scale" class="w-3 h-3 text-[#06b6d4]"></i>
+                            <i data-lucide="scale" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
                             <span>Legal & Fan Project Notice</span>
                         </button>
                     </div>
@@ -1630,9 +1631,6 @@
         let selectedPlayerCount = 2;
         let temporaryWizardDeck = 'all';
 
-        // Auto-advance timer reference
-        let autoAdvanceTimer = null;
-
         // Pot rollover rule state (Default: false / Standard game rules)
         let isPotRolloverEnabled = false;
         let pot = 1;
@@ -1738,11 +1736,9 @@
                 const storedTimer = localStorage.getItem('colourbrain_round_timer_enabled');
                 isRoundTimerEnabled = storedTimer === 'true';
 
-                // Auto Read-Aloud is turned off by default
-                isAutoReadAloudEnabled = false;
-                try {
-                    localStorage.setItem('colourbrain_auto_read_aloud', 'false');
-                } catch (e) { }
+                // Auto Read-Aloud: defaults to false if unset, remembers user choice if set
+                const storedVoice = localStorage.getItem('colourbrain_auto_read_aloud');
+                isAutoReadAloudEnabled = storedVoice === 'true';
 
                 const storedSeen = localStorage.getItem('colourbrain_seen_card_ids');
                 if (storedSeen) {
@@ -1938,16 +1934,16 @@
 
             if (roundTimerSeconds === 0) {
                 textEl.innerText = t.timesUpLabel || "TIME'S UP!";
-                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs flex items-center gap-1 animate-bounce";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-rose-500 text-white border border-rose-600 shadow-xs flex items-center gap-1 animate-bounce";
             } else if (roundTimerSeconds <= 5) {
                 textEl.innerText = `${roundTimerSeconds}s`;
-                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-rose-500/15 text-rose-700 border border-rose-500/40 shadow-2xs flex items-center gap-1 animate-pulse";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-rose-500/15 text-rose-700 border border-rose-500/40 shadow-2xs flex items-center gap-1 animate-pulse";
             } else if (roundTimerSeconds <= 10) {
                 textEl.innerText = `${roundTimerSeconds}s`;
-                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-2xs flex items-center gap-1";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-2xs flex items-center gap-1";
             } else {
                 textEl.innerText = `${roundTimerSeconds}s`;
-                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 shadow-2xs flex items-center gap-1";
             }
         }
 
@@ -2148,9 +2144,9 @@
             badge.innerText = `${t.potPrefix}: ${pot} ${ptsUnit}`;
 
             if (pot > 1) {
-                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-xs animate-bounce";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase font-game bg-amber-500/15 text-amber-700 border border-amber-500/40 shadow-xs animate-bounce";
             } else {
-                badge.className = "px-2 py-0.5 rounded-full text-[10px] font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs";
+                badge.className = "px-2 py-0.5 rounded-full text-xs font-black uppercase font-game bg-[#06b6d4]/15 text-[#0891b2] border border-[#06b6d4]/30 shadow-2xs";
             }
         }
 
@@ -3083,10 +3079,6 @@
                 showConfirmScoreRequiredAlert();
                 return;
             }
-            if (autoAdvanceTimer) {
-                clearTimeout(autoAdvanceTimer);
-                autoAdvanceTimer = null;
-            }
             playTone(550, 'sine', 0.05, 0.08);
             markCurrentCardAsSeen();
             prepareCardForNavigation();
@@ -3102,10 +3094,6 @@
         }
 
         function prevCard() {
-            if (autoAdvanceTimer) {
-                clearTimeout(autoAdvanceTimer);
-                autoAdvanceTimer = null;
-            }
             playTone(500, 'sine', 0.05, 0.08);
             prepareCardForNavigation();
             currentIndex = (currentIndex - 1 + activeQuestions.length) % activeQuestions.length;
@@ -3185,7 +3173,7 @@
                         <!-- Player Name on top -->
                         <div class="w-full flex items-center justify-center gap-1 leading-tight">
                             <span class="w-2 h-2 rounded-full flex-none shadow-2xs" style="background-color: ${team.hex}; border: 1px solid rgba(255,255,255,0.9);"></span>
-                            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate max-w-full">${escapeHtml(team.name)}</span>
+                            <span class="text-xs font-bold uppercase tracking-wider truncate max-w-full">${escapeHtml(team.name)}</span>
                         </div>
                         <!-- Current Score on bottom -->
                         <span class="font-black text-xl sm:text-2xl leading-none mt-1 text-white">${team.score}</span>
@@ -3209,7 +3197,7 @@
                     box.innerHTML = `
                         ${(isSuddenDeath && !isEliminatedInSuddenDeath) ? '<span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white shadow-xs flex items-center justify-center font-black text-[9px]">⚡</span>' : ''}
                         <!-- Player Name on top -->
-                        <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate w-full px-0.5 leading-tight">${escapeHtml(team.name)}</span>
+                        <span class="text-xs font-bold uppercase tracking-wider truncate w-full px-0.5 leading-tight">${escapeHtml(team.name)}</span>
                         <!-- Current Score on bottom -->
                         <span class="font-black text-xl sm:text-2xl leading-none mt-1">${team.score}</span>
                     `;
@@ -3323,10 +3311,6 @@
                 saveTeamsToStorage();
                 updateSuddenDeathBadgeUI();
                 renderLiveScoreboard();
-                if (autoAdvanceTimer) {
-                    clearTimeout(autoAdvanceTimer);
-                    autoAdvanceTimer = null;
-                }
                 return;
             }
 
@@ -3407,10 +3391,6 @@
                         playWinFanfare();
                         triggerConfetti();
                         renderLiveScoreboard();
-                        if (autoAdvanceTimer) {
-                            clearTimeout(autoAdvanceTimer);
-                            autoAdvanceTimer = null;
-                        }
                         setTimeout(() => {
                             showWinnerModal(topTiedTeams);
                         }, 650);
@@ -3427,20 +3407,12 @@
                         setTimeout(() => playTone(659.25, 'triangle', 0.2, 0.2), 130);
                         updateSuddenDeathBadgeUI();
                         renderLiveScoreboard();
-                        if (autoAdvanceTimer) {
-                            clearTimeout(autoAdvanceTimer);
-                            autoAdvanceTimer = null;
-                        }
                         return;
                     }
                 }
             }
 
             renderLiveScoreboard();
-            if (autoAdvanceTimer) {
-                clearTimeout(autoAdvanceTimer);
-                autoAdvanceTimer = null;
-            }
         }
 
         function showWinnerModal(winningTeams) {
