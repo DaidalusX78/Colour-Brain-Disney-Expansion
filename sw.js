@@ -1,4 +1,4 @@
-const CACHE_NAME = 'colourbrain-disney-v1.11.9';
+const CACHE_NAME = 'colourbrain-disney-v1.12.0';
 const CORE_ASSETS = [
   './',
   './index.html',

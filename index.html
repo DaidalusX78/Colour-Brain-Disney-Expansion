@@ -3,13 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="theme-color" content="#06b6d4">
     <link rel="manifest" href="manifest.json">
-    <!-- Version: v1.11.9 -->
+    <!-- Version: v1.12.0 -->
     <!-- Created by Marc Bailey (https://github.com/DaidalusX78) | Inspired by Colour Brain by Big Potato Games (https://bigpotato.com) -->
-    <title>Colour Brain: Disney & Pixar Expansion Pack</title>
+    <title>Colour Brain: Disney Expansion Pack</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -121,7 +120,9 @@
                 <h1
                     class="text-sm font-extrabold font-game tracking-wider uppercase flex items-center gap-1.5 leading-none text-slate-900">
                     <span>COLOUR<span class="text-[#06b6d4]">BRAIN</span></span>
-                    <span id="appVersionBadge" onclick="handleSecretVersionTap()" class="text-xs font-mono font-medium text-slate-400 cursor-pointer select-none" title="App Version (Tap 5x for Developer tools)">v1.11.9</span>
+                    <span id="appVersionBadge" onclick="handleSecretVersionTap()"
+                        class="text-xs font-mono font-medium text-slate-400 cursor-pointer select-none"
+                        title="App Version (Tap 5x for Developer tools)">v1.12.0</span>
                 </h1>
                 <p class="text-xs text-slate-500 leading-tight" id="deckSubtitle">Disney Expansion Pack</p>
             </div>
@@ -162,7 +163,8 @@
     <!-- Floating Game Notification Toast -->
     <div id="gameToast"
         class="fixed top-14 sm:top-16 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 -translate-y-2 max-w-[90vw]">
-        <div class="px-4 py-2 rounded-2xl bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-black font-game shadow-xl border border-slate-700/60 flex items-center gap-2">
+        <div
+            class="px-4 py-2 rounded-2xl bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-black font-game shadow-xl border border-slate-700/60 flex items-center gap-2">
             <i id="gameToastIcon" data-lucide="alert-circle" class="w-4 h-4 text-amber-400 flex-none"></i>
             <span id="gameToastMsg">Confirm scores before proceeding</span>
         </div>
@@ -177,7 +179,7 @@
             <!-- Status Badges Row: Target Score, Sudden Death, Pot Rollover, & Round Timer -->
             <div class="flex flex-wrap items-center justify-center gap-1.5">
                 <span id="targetScoreBadge"
-                    class="px-2 py-0.5 rounded-full text-xs font-black uppercase font-game bg-slate-200/80 text-slate-600 border border-slate-300/70 shadow-2xs">
+                    class="px-2 py-0.5 rounded-full text-xs font-black uppercase font-game bg-[#06b6d4] text-white border border-[#0891b2] shadow-2xs">
                     First to 10
                 </span>
                 <span id="suddenDeathBadge"
@@ -232,7 +234,8 @@
                         </div>
 
                         <!-- Main Question Text Area (Reduced top margin, safe bottom clearance away from silhouette) -->
-                        <div class="flex-1 flex items-center justify-center text-center px-2 pt-0 pb-16 sm:pb-20 overflow-hidden">
+                        <div
+                            class="flex-1 flex items-center justify-center text-center px-2 pt-0 pb-16 sm:pb-20 overflow-hidden">
                             <h2 id="frontQuestionText"
                                 class="text-base sm:text-lg md:text-xl font-black text-slate-900 leading-snug font-game max-h-full overflow-hidden text-balance">
                                 What colour is Bruno's ruana (poncho) in Encanto?
@@ -241,7 +244,7 @@
 
                         <!-- Silhouette Container in Bottom-Right Corner (Overlapping right & bottom edges) -->
                         <div id="frontSilhouetteContainer"
-                            class="absolute -bottom-7 -right-7 w-[12rem] h-[12rem] flex items-center justify-center pointer-events-none select-none z-20"
+                            class="absolute -bottom-6 -right-6 w-[10.2rem] h-[10.2rem] flex items-center justify-center pointer-events-none select-none z-20"
                             title="1 COLOUR">
                             <img id="frontSilhouetteImg" src="assets/silhouettes/mickey_silhouette.svg"
                                 alt="Mickey Silhouette"
@@ -391,7 +394,7 @@
                 </div>
 
                 <!-- Audio Toggle -->
-                <div class="flex items-center justify-between py-2 border-y border-slate-200">
+                <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <span id="menuSoundTitle" class="text-xs font-bold text-slate-600">Sound Effects</span>
                     <button id="menuSoundBtn" onclick="toggleAudio()"
                         class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 text-slate-800 border border-slate-200">
@@ -404,9 +407,7 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuPotTitle" class="text-xs font-bold text-slate-800 block">Pot Rollover</span>
-                        <span id="menuPotSubtitle" class="text-xs text-slate-500 block leading-tight">House rule:
-                            0-pt rounds
-                            roll over</span>
+                        <span id="menuPotSubtitle" class="text-xs text-slate-500 block leading-tight">House rule: 0pt rounds roll over</span>
                     </div>
                     <button id="menuPotToggleBtn" type="button" onclick="togglePotRollover()"
                         class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -420,7 +421,8 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuTimerTitle" class="text-xs font-bold text-slate-800 block">30s Round Timer</span>
-                        <span id="menuTimerSubtitle" class="text-xs text-slate-500 block leading-tight">Countdown clock per question</span>
+                        <span id="menuTimerSubtitle" class="text-xs text-slate-500 block leading-tight">Countdown clock
+                            per question</span>
                     </div>
                     <button id="menuTimerToggleBtn" type="button" onclick="toggleRoundTimer()"
                         class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -434,7 +436,7 @@
                 <div class="flex items-center justify-between py-2 border-b border-slate-200">
                     <div class="space-y-0.5 pr-2">
                         <span id="menuVoiceTitle" class="text-xs font-bold text-slate-800 block">Auto Read-Aloud</span>
-                        <span id="menuVoiceSubtitle" class="text-xs text-slate-500 block leading-tight">Voice host reads cards (EN / ES)</span>
+                        <span id="menuVoiceSubtitle" class="text-xs text-slate-500 block leading-tight">Reads Cards</span>
                     </div>
                     <button id="menuVoiceToggleBtn" type="button" onclick="toggleAutoReadAloud()"
                         class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -448,31 +450,22 @@
                 <div class="space-y-1.5 py-2 border-b border-slate-200">
                     <div class="flex items-center justify-between">
                         <span id="menuTargetScoreLabel" class="text-xs font-bold text-slate-800">Winning Target</span>
-                        <span id="menuSeenCardsStatus" class="text-xs font-mono text-slate-400" title="Unseen-First Smart Shuffle Progress">0/81 seen</span>
+                        <span id="menuSeenCardsStatus" class="text-xs font-mono text-slate-400"
+                            title="Unseen-First Smart Shuffle Progress">0/81 seen</span>
                     </div>
                     <div class="grid grid-cols-4 gap-1.5">
                         <button type="button" data-target="5" onclick="setTargetScore(5)"
-                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">5 pts</button>
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">5
+                            pts</button>
                         <button type="button" data-target="10" onclick="setTargetScore(10)"
-                            class="target-score-btn py-1.5 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all">10 pts</button>
+                            class="target-score-btn py-1.5 rounded-lg border-2 border-[#06b6d4] bg-[#06b6d4]/15 text-xs font-black font-game text-[#0891b2] active:scale-95 transition-all">10
+                            pts</button>
                         <button type="button" data-target="15" onclick="setTargetScore(15)"
-                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">15 pts</button>
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">15
+                            pts</button>
                         <button type="button" data-target="0" onclick="setTargetScore(0)"
-                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">∞ Free</button>
-                    </div>
-                </div>
-
-                <!-- Rules Quick Reminder (Dynamically Reflects Standard vs Pot Rollover Mode) -->
-                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs text-slate-600 space-y-1">
-                    <p id="menuRulesTitle" class="font-bold text-[#06b6d4] uppercase tracking-wider text-xs">How
-                        Points Work
-                        (Official Rules)</p>
-                    <div id="menuRulesList" class="space-y-1">
-                        <p>• Everyone plays colour cards face down.</p>
-                        <p>• Reveal simultaneously!</p>
-                        <p>• <strong>Everyone right:</strong> 0 pts.</p>
-                        <p>• <strong>Nobody right:</strong> 0 pts.</p>
-                        <p>• <strong>Some right:</strong> 1 pt for each correct team.</p>
+                            class="target-score-btn py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">∞
+                            Free</button>
                     </div>
                 </div>
             </div>
@@ -513,17 +506,21 @@
                             <i data-lucide="database" class="w-4 h-4 text-amber-600"></i>
                             <span id="menuDeckToolsLabel">Question Data Tools</span>
                         </div>
-                        <span class="text-[10px] bg-amber-200/80 text-amber-800 font-mono px-1.5 py-0.5 rounded-full font-bold">Admin</span>
+                        <span
+                            class="text-[10px] bg-amber-200/80 text-amber-800 font-mono px-1.5 py-0.5 rounded-full font-bold">Admin</span>
                     </button>
                 </div>
 
                 <!-- Credits & Version Info in Drawer -->
                 <div class="pt-3 border-t border-slate-200 text-center space-y-1">
                     <div class="text-xs font-bold text-slate-700">
-                        Expansion created by <a href="https://github.com/DaidalusX78" target="_blank" rel="noopener noreferrer" class="text-[#0891b2] hover:underline">Marc Bailey</a>
+                        Expansion created by <a href="https://github.com/DaidalusX78" target="_blank"
+                            rel="noopener noreferrer" class="text-[#0891b2] hover:underline">Marc Bailey</a>
                     </div>
                     <div class="text-xs text-slate-500">
-                        Inspired by the awesome game from <a href="https://bigpotato.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-700 hover:text-[#0891b2]">Big Potato Games</a>
+                        Inspired by the awesome game from <a href="https://bigpotato.com" target="_blank"
+                            rel="noopener noreferrer" class="font-semibold text-slate-700 hover:text-[#0891b2]">Big
+                            Potato Games</a>
                     </div>
                     <div class="pt-0.5">
                         <button type="button" onclick="openDisclaimerModal()"
@@ -532,8 +529,9 @@
                             <span id="menuLegalNoticeLabel">Legal & Fan Notice</span>
                         </button>
                     </div>
-                    <div class="text-xs text-slate-400 font-mono cursor-pointer select-none" onclick="handleSecretVersionTap()" title="Tap 5x for Developer tools">
-                        Disney Expansion Pack • v1.11.9
+                    <div class="text-xs text-slate-400 font-mono cursor-pointer select-none"
+                        onclick="handleSecretVersionTap()" title="Tap 5x for Developer tools">
+                        Disney Expansion Pack • v1.12.0
                     </div>
                 </div>
             </div>
@@ -631,15 +629,20 @@
                     <button type="button" data-deck="all" onclick="pickWizardDeck('all')"
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border-2 border-[#06b6d4] bg-[#06b6d4]/10 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
-                                <img src="assets/silhouettes/mickey_silhouette.svg" alt="All" class="max-h-7 max-w-full object-contain" />
+                            <div
+                                class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/silhouettes/mickey_silhouette.svg" alt="All"
+                                    class="max-h-7 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-all">All</p>
-                                    <span id="deckCount-all" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">81</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-all">
+                                        All</p>
+                                    <span id="deckCount-all"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">81</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 truncate" id="wizDeckSub-all">Full expansion deck (all studios)</p>
+                                <p class="text-[11px] text-slate-500 truncate" id="wizDeckSub-all">Full expansion deck
+                                    (all studios)</p>
                             </div>
                         </div>
                         <span class="deck-check-indicator text-[#06b6d4] font-bold text-lg flex-none">●</span>
@@ -648,15 +651,20 @@
                     <button type="button" data-deck="disneychannel" onclick="pickWizardDeck('disneychannel')"
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
-                                <img src="assets/logos/disney_channel.svg" alt="Disney Channel" class="max-h-7 max-w-full object-contain" />
+                            <div
+                                class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/disney_channel.svg" alt="Disney Channel"
+                                    class="max-h-7 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-disneychannel">Disney Channel</p>
-                                    <span id="deckCount-disneychannel" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">26</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate"
+                                        id="wizDeckOpt-disneychannel">Disney Channel</p>
+                                    <span id="deckCount-disneychannel"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">26</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 truncate">Descendants, Zombies, Vampirina, Electric Bloom</p>
+                                <p class="text-[11px] text-slate-500 truncate">Descendants, Zombies, Vampirina, Electric
+                                    Bloom</p>
                             </div>
                         </div>
                         <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
@@ -665,15 +673,20 @@
                     <button type="button" data-deck="classic" onclick="pickWizardDeck('classic')"
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
-                                <img src="assets/logos/walt_disney_animation_studios.svg" alt="Walt Disney Animation" class="max-h-7 max-w-full object-contain" />
+                            <div
+                                class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/walt_disney_animation_studios.svg" alt="Walt Disney Animation"
+                                    class="max-h-7 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-classic">Walt Disney Animation</p>
-                                    <span id="deckCount-classic" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">16</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate"
+                                        id="wizDeckOpt-classic">Walt Disney Animation</p>
+                                    <span id="deckCount-classic"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">16</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 truncate">Encanto, Moana, Frozen II, Wish, Zootopia</p>
+                                <p class="text-[11px] text-slate-500 truncate">Encanto, Moana, Frozen II, Wish, Zootopia
+                                </p>
                             </div>
                         </div>
                         <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
@@ -682,15 +695,20 @@
                     <button type="button" data-deck="pixar" onclick="pickWizardDeck('pixar')"
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1.5">
-                                <img src="assets/logos/pixar.svg" alt="Pixar" class="max-h-6 max-w-full object-contain" />
+                            <div
+                                class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1.5">
+                                <img src="assets/logos/pixar.svg" alt="Pixar"
+                                    class="max-h-6 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-pixar">Pixar Animation</p>
-                                    <span id="deckCount-pixar" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">17</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate"
+                                        id="wizDeckOpt-pixar">Pixar Animation</p>
+                                    <span id="deckCount-pixar"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">17</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 truncate">Inside Out 2, Turning Red, Elemental, Luca, Coco</p>
+                                <p class="text-[11px] text-slate-500 truncate">Inside Out 2, Turning Red, Elemental,
+                                    Luca, Coco</p>
                             </div>
                         </div>
                         <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
@@ -700,12 +718,15 @@
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <div class="w-11 h-9 rounded-xl flex items-center justify-center flex-none px-1">
-                                <img src="assets/logos/lucasfilm.svg" alt="Lucasfilm" class="max-h-6 max-w-full object-contain" />
+                                <img src="assets/logos/lucasfilm.svg" alt="Lucasfilm"
+                                    class="max-h-6 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-lucasfilm">Lucasfilm</p>
-                                    <span id="deckCount-lucasfilm" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">10</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate"
+                                        id="wizDeckOpt-lucasfilm">Lucasfilm</p>
+                                    <span id="deckCount-lucasfilm"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">10</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 truncate">Star Wars, The Mandalorian, Ahsoka</p>
                             </div>
@@ -716,15 +737,20 @@
                     <button type="button" data-deck="marvel" onclick="pickWizardDeck('marvel')"
                         class="deck-choice-btn w-full p-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left active:scale-95 transition-all gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
-                                <img src="assets/logos/marvel_studios.svg" alt="Marvel Studios" class="max-h-6 max-w-full object-contain" />
+                            <div
+                                class="w-11 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center flex-none shadow-2xs px-1">
+                                <img src="assets/logos/marvel_studios.svg" alt="Marvel Studios"
+                                    class="max-h-6 max-w-full object-contain" />
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                    <p class="font-black text-sm text-slate-900 font-game truncate" id="wizDeckOpt-marvel">Marvel Studios</p>
-                                    <span id="deckCount-marvel" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">12</span>
+                                    <p class="font-black text-sm text-slate-900 font-game truncate"
+                                        id="wizDeckOpt-marvel">Marvel Studios</p>
+                                    <span id="deckCount-marvel"
+                                        class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-slate-200/80 text-slate-700 font-mono">12</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 truncate">Captain America, Black Panther, Loki, Spider-Man</p>
+                                <p class="text-[11px] text-slate-500 truncate">Captain America, Black Panther, Loki,
+                                    Spider-Man</p>
                             </div>
                         </div>
                         <span class="deck-check-indicator text-slate-300 font-bold text-lg flex-none">○</span>
@@ -734,7 +760,9 @@
                 <!-- Match Rules Bar: Winning Score Target & 30s Timer Toggle -->
                 <div class="pt-1.5 pb-1 border-t border-slate-200/80 space-y-2 flex-none">
                     <div class="flex items-center justify-between gap-2">
-                        <span id="wizTargetScoreLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Winning Target</span>
+                        <span id="wizTargetScoreLabel"
+                            class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Winning
+                            Target</span>
                         <div class="flex items-center gap-1">
                             <button type="button" data-target="5" onclick="setTargetScore(5)"
                                 class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">5</button>
@@ -743,13 +771,16 @@
                             <button type="button" data-target="15" onclick="setTargetScore(15)"
                                 class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all">15</button>
                             <button type="button" data-target="0" onclick="setTargetScore(0)"
-                                class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all" title="Endless Free Play">∞</button>
+                                class="target-score-btn px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold font-game text-slate-700 active:scale-95 transition-all"
+                                title="Endless Free Play">∞</button>
                         </div>
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-1.5">
                             <i data-lucide="timer" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
-                            <span id="wizTimerLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">30s Round Timer</span>
+                            <span id="wizTimerLabel"
+                                class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">30s
+                                Round Timer</span>
                         </div>
                         <button id="wizTimerToggleBtn" type="button" onclick="toggleRoundTimer()"
                             class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -761,7 +792,9 @@
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-1.5">
                             <i data-lucide="volume-2" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
-                            <span id="wizVoiceLabel" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Auto Read-Aloud</span>
+                            <span id="wizVoiceLabel"
+                                class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-game">Auto
+                                Read-Aloud</span>
                         </div>
                         <button id="wizVoiceToggleBtn" type="button" onclick="toggleAutoReadAloud()"
                             class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-200"
@@ -792,7 +825,8 @@
         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div
             class="w-full max-w-sm bg-white border border-slate-200/90 rounded-3xl p-6 text-slate-800 shadow-2xl text-center space-y-5">
-            <div class="mx-auto w-16 h-16 rounded-2xl bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-500 shadow-sm">
+            <div
+                class="mx-auto w-16 h-16 rounded-2xl bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-500 shadow-sm">
                 <i data-lucide="trophy" class="w-9 h-9"></i>
             </div>
             <div class="space-y-1.5">
@@ -832,7 +866,8 @@
                         <i data-lucide="sparkles" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h2 id="guideModalTitle" class="text-lg font-black font-game uppercase tracking-wide text-slate-900 leading-none">
+                        <h2 id="guideModalTitle"
+                            class="text-lg font-black font-game uppercase tracking-wide text-slate-900 leading-none">
                             How to Play
                         </h2>
                         <p id="guideModalSubtitle" class="text-[11px] text-slate-500 mt-0.5">
@@ -851,8 +886,10 @@
                 <!-- Step 1: 11 Colour Cards -->
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2">
                     <div class="flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">1</span>
-                        <h3 id="guideStep1Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                        <span
+                            class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">1</span>
+                        <h3 id="guideStep1Title"
+                            class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
                             Hold Your 11 Colour Cards
                         </h3>
                     </div>
@@ -867,40 +904,52 @@
                 <!-- Step 2: Question & Mickey Silhouette -->
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5">
                     <div class="flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">2</span>
-                        <h3 id="guideStep2Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                        <span
+                            class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">2</span>
+                        <h3 id="guideStep2Title"
+                            class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
                             Check the Mickey Number & Pick Cards
                         </h3>
                     </div>
                     <p id="guideStep2Desc" class="text-xs text-slate-600 leading-relaxed">
-                        Read the question aloud. The <strong>number inside the Mickey silhouette</strong> in the bottom-right corner tells you how many colour cards (1, 2, or 3) to play face-down on the table.
+                        Read the question aloud. The <strong>number inside the Mickey silhouette</strong> in the
+                        bottom-right corner tells you how many colour cards (1, 2, or 3) to play face-down on the table.
                     </p>
                 </div>
 
                 <!-- Step 3: Flip & Mark Correct Teams -->
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5">
                     <div class="flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">3</span>
-                        <h3 id="guideStep3Title" class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
+                        <span
+                            class="w-6 h-6 rounded-full bg-[#06b6d4] text-white font-game font-black text-xs flex items-center justify-center flex-none">3</span>
+                        <h3 id="guideStep3Title"
+                            class="text-xs font-black font-game uppercase tracking-wider text-slate-900">
                             Reveal, Flip & Tap Winners
                         </h3>
                     </div>
                     <p id="guideStep3Desc" class="text-xs text-slate-600 leading-relaxed">
-                        Everyone reveals their physical colour cards simultaneously! Tap the card (or <strong>ANSWER</strong>) to flip it, tap the score boxes at the top for every team that got <strong>all</strong> required colours right, then press <strong>CONFIRM SCORES</strong>.
+                        Everyone reveals their physical colour cards simultaneously! Tap the card (or
+                        <strong>ANSWER</strong>) to flip it, tap the score boxes at the top for every team that got
+                        <strong>all</strong> required colours right, then press <strong>CONFIRM SCORES</strong>.
                     </p>
                 </div>
 
                 <!-- Step 4: Scoring Rules -->
                 <div class="p-3 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 space-y-1.5">
                     <div class="flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-[#0891b2] text-white font-game font-black text-xs flex items-center justify-center flex-none">4</span>
-                        <h3 id="guideStep4Title" class="text-xs font-black font-game uppercase tracking-wider text-[#0891b2]">
+                        <span
+                            class="w-6 h-6 rounded-full bg-[#0891b2] text-white font-game font-black text-xs flex items-center justify-center flex-none">4</span>
+                        <h3 id="guideStep4Title"
+                            class="text-xs font-black font-game uppercase tracking-wider text-[#0891b2]">
                             How Scoring Works (First to 10 Wins!)
                         </h3>
                     </div>
                     <div id="guideStep4Desc" class="text-xs text-slate-700 space-y-1 leading-relaxed">
-                        <p>• <strong>Some teams right:</strong> Each correct team scores <strong>+1 pt</strong> (or wins the pot!).</p>
-                        <p>• <strong>Everyone right OR Nobody right:</strong> <strong>0 pts</strong> awarded! <em>(Tip: Enable <strong>Pot Rollover</strong> in the menu if you want 0-pt rounds to roll over into a jackpot!)</em></p>
+                        <p>• <strong>Some teams right:</strong> Each correct team scores <strong>+1 pt</strong> (or wins
+                            the pot!).</p>
+                        <p>• <strong>Everyone right OR Nobody right:</strong> <strong>0 pts</strong> awarded! <em>(Tip:
+                                Enable <strong>Pot Rollover</strong> in the menu if you want 0-pt rounds to roll over
+                                into a jackpot!)</em></p>
                     </div>
                 </div>
             </div>
@@ -913,10 +962,12 @@
                 </button>
                 <div class="text-center text-xs text-slate-400 space-y-1">
                     <div>
-                        Expansion by <strong class="text-slate-600">Marc Bailey</strong> • Inspired by the awesome game from <strong class="text-slate-600">Big Potato Games</strong>
+                        Expansion by <strong class="text-slate-600">Marc Bailey</strong> • Inspired by the awesome game
+                        from <strong class="text-slate-600">Big Potato Games</strong>
                     </div>
                     <div>
-                        <button type="button" onclick="openDisclaimerModal()" class="text-[#0891b2] hover:underline inline-flex items-center gap-1 font-medium">
+                        <button type="button" onclick="openDisclaimerModal()"
+                            class="text-[#0891b2] hover:underline inline-flex items-center gap-1 font-medium">
                             <i data-lucide="scale" class="w-3.5 h-3.5 text-[#06b6d4]"></i>
                             <span>Legal & Fan Project Notice</span>
                         </button>
@@ -935,11 +986,13 @@
             <!-- Header -->
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 flex-none">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-2xl bg-[#06b6d4]/10 text-[#0891b2] flex items-center justify-center flex-none">
+                    <div
+                        class="w-9 h-9 rounded-2xl bg-[#06b6d4]/10 text-[#0891b2] flex items-center justify-center flex-none">
                         <i data-lucide="scale" class="w-5 h-5 text-[#06b6d4]"></i>
                     </div>
                     <div>
-                        <h2 id="disclaimerModalTitle" class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
+                        <h2 id="disclaimerModalTitle"
+                            class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
                             Legal & Fan Project Notice
                         </h2>
                         <p id="disclaimerModalSubtitle" class="text-[11px] text-slate-500 mt-0.5">
@@ -954,26 +1007,38 @@
             </div>
 
             <!-- Content -->
-            <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
+            <div
+                class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 font-medium text-slate-700">
-                    <span id="disclaimerIntroText"><strong>Colour Brain: Disney Edition – Fan Expansion</strong> is an unofficial, non-commercial companion app created solely for personal and family use.</span>
+                    <span id="disclaimerIntroText"><strong>Colour Brain: Disney Edition – Fan Expansion</strong> is an
+                        unofficial, non-commercial companion app created solely for personal and family use.</span>
                 </div>
                 <ul class="space-y-2.5 text-slate-600 text-xs">
                     <li class="flex items-start gap-2">
                         <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
-                        <span id="disclaimerNoAffiliationText"><strong>No Affiliation:</strong> This project is not affiliated with, endorsed by, sponsored by, or connected to <strong>Big Potato Games Ltd.</strong> or <strong>The Walt Disney Company</strong> (including Disney, Pixar, or their subsidiaries).</span>
+                        <span id="disclaimerNoAffiliationText"><strong>No Affiliation:</strong> This project is not
+                            affiliated with, endorsed by, sponsored by, or connected to <strong>Big Potato Games
+                                Ltd.</strong> or <strong>The Walt Disney Company</strong> (including Disney, Pixar, or
+                            their subsidiaries).</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
-                        <span id="disclaimerTrademarksText"><strong>Trademark & Copyright Attribution:</strong> <em>Colour Brain</em> is a registered trademark of Big Potato Games Ltd. All Disney and Pixar characters, titles, logos, and related marks are copyright and trademarks of Disney Enterprises, Inc. and its licensors.</span>
+                        <span id="disclaimerTrademarksText"><strong>Trademark & Copyright Attribution:</strong>
+                            <em>Colour Brain</em> is a registered trademark of Big Potato Games Ltd. All Disney and
+                            Pixar characters, titles, logos, and related marks are copyright and trademarks of Disney
+                            Enterprises, Inc. and its licensors.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
-                        <span id="disclaimerNonCommercialText"><strong>Non-Commercial:</strong> This companion is 100% free, open-source, and non-monetized. It features no advertisements, tracking, in-app purchases, or donation links.</span>
+                        <span id="disclaimerNonCommercialText"><strong>Non-Commercial:</strong> This companion is 100%
+                            free, open-source, and non-monetized. It features no advertisements, tracking, in-app
+                            purchases, or donation links.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
-                        <span id="disclaimerRequiresBaseText"><strong>Requires Base Game:</strong> This tool is an auxiliary prompt generator only and is not a standalone game. It requires the official physical <em>Colour Brain: Disney Edition</em> board game and cards to play.</span>
+                        <span id="disclaimerRequiresBaseText"><strong>Requires Base Game:</strong> This tool is an
+                            auxiliary prompt generator only and is not a standalone game. It requires the official
+                            physical <em>Colour Brain: Disney Edition</em> board game and cards to play.</span>
                     </li>
                 </ul>
             </div>
@@ -997,15 +1062,18 @@
             <!-- Header -->
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 flex-none">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center flex-none">
+                    <div
+                        class="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center flex-none">
                         <i data-lucide="database" class="w-5 h-5 text-amber-600"></i>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h2 id="deckToolsModalTitle" class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
+                            <h2 id="deckToolsModalTitle"
+                                class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
                                 Question Data Tools
                             </h2>
-                            <span class="text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-mono font-bold px-1.5 py-0.5 rounded-full uppercase">Admin</span>
+                            <span
+                                class="text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-mono font-bold px-1.5 py-0.5 rounded-full uppercase">Admin</span>
                         </div>
                         <p id="deckToolsModalSubtitle" class="text-xs text-slate-500 mt-0.5">
                             Google Sheets sync & CSV deck management
@@ -1019,12 +1087,15 @@
             </div>
 
             <!-- Content Area -->
-            <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
+            <div
+                class="flex-1 overflow-y-auto no-scrollbar space-y-4 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
                 <!-- Deck Status Card -->
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-game">Deck Status</span>
-                        <span id="dtTotalCardsBadge" class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#06b6d4]/15 text-[#0891b2] font-mono">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-game">Deck
+                            Status</span>
+                        <span id="dtTotalCardsBadge"
+                            class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#06b6d4]/15 text-[#0891b2] font-mono">
                             <span id="dtTotalCards">65</span> cards
                         </span>
                     </div>
@@ -1050,7 +1121,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1.5">
                             <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
-                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-900 font-game">Google Sheets Live Sync</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-900 font-game">Google
+                                Sheets Live Sync</span>
                         </div>
                         <a href="https://docs.google.com/spreadsheets/d/14GnJvQRl74nkzaIuPekk7-UJrByNrAW9DcK_l8GHnO8/edit#gid=1632021490"
                             target="_blank" rel="noopener noreferrer"
@@ -1073,7 +1145,8 @@
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2.5">
                     <div class="flex items-center gap-1.5">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4 text-slate-600"></i>
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 font-game">CSV Backup & Import</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 font-game">CSV Backup &
+                            Import</span>
                     </div>
                     <p class="text-xs text-slate-500 leading-normal">
                         Export an offline CSV backup or import custom question files without internet.
@@ -1267,7 +1340,7 @@
                 language: "Language",
                 expansionDeck: "Expansion Deck & Theme",
                 potRolloverTitle: "Pot Rollover",
-                potRolloverSubtitle: "House rule: 0-pt rounds roll over",
+                potRolloverSubtitle: "House rule: 0pt rounds roll over",
                 soundEffects: "Sound Effects",
                 enabled: "Enabled",
                 muted: "Muted",
@@ -1339,7 +1412,7 @@
                 seenStatusFmt: "{seen}/{total} seen",
                 timesUpLabel: "TIME'S UP!",
                 voiceLabel: "Auto Read-Aloud",
-                voiceSubtitle: "Voice host reads cards (EN / ES)",
+                voiceSubtitle: "Reads Cards",
                 speakCardTooltip: "Read Card Aloud (S)",
                 legalNoticeBtn: "Legal & Fan Notice",
                 disclaimerTitle: "Legal & Fan Project Notice",
@@ -1738,7 +1811,7 @@
         }
 
         // ================= STATE MANAGEMENT =================
-        const APP_VERSION = 'v1.11.9';
+        const APP_VERSION = 'v1.12.0';
         const ALL_CATEGORY_KEYS = ['disneychannel', 'classic', 'pixar', 'lucasfilm', 'marvel'];
         let currentDeckKey = 'all';
         let selectedWizardDecks = ['all'];
@@ -3437,7 +3510,7 @@
             if (!roundConfirmed) {
                 const correctCount = Object.keys(roundChoices).filter(k => roundChoices[k] === 'correct').length;
                 const confirmText = t.confirmScoresBtn || "CONFIRM SCORES";
-                
+
                 if (!isFlipped) {
                     // Blanked out / disabled until question card is turned over to reveal the answer (2.5x larger text)
                     actionBar.innerHTML = `
