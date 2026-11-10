@@ -112,6 +112,13 @@ The repository is configured with a GitHub Actions workflow (`.github/workflows/
 
 ---
 
+## 👏 Credits & Acknowledgements
+
+- **Expansion Deck & Web App**: Created, developed & curated by **[Marc Bailey](https://github.com/DaidalusX78)** ([@DaidalusX78](https://github.com/DaidalusX78)).
+- **Original Game Concept**: Huge shoutout and special credit to **[Big Potato Games](https://bigpotato.com/)** for the creation of the original, awesome **Colour Brain** board game! Support their fantastic games at [bigpotato.com](https://bigpotato.com/).
+
+---
+
 ## ⚖️ Disclaimer
 
 This is an **unofficial, non-commercial fan-made companion app and expansion deck** created for personal tabletop game nights. 
