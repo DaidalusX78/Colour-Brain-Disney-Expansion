@@ -1,7 +1,7 @@
 # Colour Brain: Disney & Pixar Expansion Deck 🎨✨
 
-[![Deploy to GitHub Pages](https://github.com/DaidalusX78/colourbrain-disney/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/DaidalusX78/colourbrain-disney/actions/workflows/deploy-pages.yml)
-[![Live Demo](https://img.shields.io/badge/Play_Live_App-daidalusx78.github.io%2Fcolourbrain--disney-06b6d4?style=flat&logo=googlechrome&logoColor=white)](https://daidalusx78.github.io/colourbrain-disney/)
+[![Deploy to GitHub Pages](https://github.com/DaidalusX78/Colour-Brain-Disney-Expansion/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/DaidalusX78/Colour-Brain-Disney-Expansion/actions/workflows/deploy-pages.yml)
+[![Live Demo](https://img.shields.io/badge/Play_Live_App-daidalusx78.github.io%2FColour--Brain--Disney--Expansion-06b6d4?style=flat&logo=googlechrome&logoColor=white)](https://daidalusx78.github.io/Colour-Brain-Disney-Expansion/)
 [![Version](https://img.shields.io/badge/Version-v1.12.1-702082.svg)](CHANGELOG.md)
 [![PWA](https://img.shields.io/badge/PWA-Ready-10b981.svg)](manifest.json)
 [![Language](https://img.shields.io/badge/Language-English_%7C_Espa%C3%B1ol-E61C24.svg)](index.html)
@@ -10,7 +10,7 @@ A digital tabletop companion and modern expansion deck for **Colour Brain: Disne
 
 Bring modern Disney, Pixar, Disney Channel, Marvel, and Star Wars questions to your family game night, complete with a live multi-team scoreboard, authentic card-flip animations, sound effects, smart shuffling, and bilingual support!
 
-👉 **[Play the App Live on GitHub Pages](https://daidalusx78.github.io/colourbrain-disney/)**
+👉 **[Play the App Live on GitHub Pages](https://daidalusx78.github.io/Colour-Brain-Disney-Expansion/)**
 
 ---
 
@@ -120,3 +120,4 @@ This is an **unofficial, non-commercial fan-made companion app and expansion dec
 - *Colour Brain* is a registered trademark of **Big Potato Games**.
 - Disney, Pixar, Marvel, Star Wars, and related character names, franchises, and artwork are registered trademarks of **Disney Enterprises, Inc.**, **Pixar**, **Marvel Characters, Inc.**, and **Lucasfilm Ltd.**
 - No copyright infringement is intended. Please support the official game by purchasing *Colour Brain: Disney Edition* from Big Potato Games.
+
