@@ -72,9 +72,8 @@ Use this app alongside your physical Colour Brain colour cards (or digital swatc
 
 ```text
 src/
-├── index.html                                 # Main production entry point
-├── colourbrain_disney_expansion_pack_v1_11_7.html # Versioned standalone single-file release
-├── questions.js                              # Trivia database array (questions, colours, artwork)
+├── index.html                                # Main production entry point
+├── questions.js                             # Trivia database array (questions, colours, artwork)
 ├── colourbrain_disney_questions_v1.7.0.csv   # Source spreadsheet export for trivia
 ├── manifest.json                             # Web app manifest for PWA installation
 ├── sw.js                                     # Service worker for offline asset caching
