@@ -544,6 +544,13 @@
                     <div class="text-[10px] text-slate-500">
                         Inspired by the awesome game from <a href="https://bigpotato.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-700 hover:text-[#0891b2]">Big Potato Games</a>
                     </div>
+                    <div class="pt-0.5">
+                        <button type="button" onclick="openDisclaimerModal()"
+                            class="text-[10px] font-semibold text-slate-500 hover:text-[#0891b2] inline-flex items-center justify-center gap-1 py-0.5 px-2 rounded-lg hover:bg-slate-100 transition-colors">
+                            <i data-lucide="scale" class="w-3 h-3 text-slate-400"></i>
+                            <span id="menuLegalNoticeLabel">Legal & Fan Notice</span>
+                        </button>
+                    </div>
                     <div class="text-[10px] text-slate-400 font-mono">
                         Disney Expansion Pack • v1.12.1
                     </div>
@@ -923,9 +930,79 @@
                     class="w-full py-3.5 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-sm uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
                     <span id="guideGotItBtn">Got It, Let's Play!</span>
                 </button>
-                <div class="text-center text-[10px] text-slate-400">
-                    Expansion by <strong class="text-slate-600">Marc Bailey</strong> • Inspired by the awesome game from <strong class="text-slate-600">Big Potato Games</strong>
+                <div class="text-center text-[10px] text-slate-400 space-y-1">
+                    <div>
+                        Expansion by <strong class="text-slate-600">Marc Bailey</strong> • Inspired by the awesome game from <strong class="text-slate-600">Big Potato Games</strong>
+                    </div>
+                    <div>
+                        <button type="button" onclick="openDisclaimerModal()" class="text-[#0891b2] hover:underline inline-flex items-center gap-1 font-medium">
+                            <i data-lucide="scale" class="w-3 h-3 text-[#06b6d4]"></i>
+                            <span>Legal & Fan Project Notice</span>
+                        </button>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= LEGAL & FAN PROJECT NOTICE MODAL ================= -->
+    <div id="disclaimerModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="closeDisclaimerModal()">
+        <div class="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 text-slate-800 shadow-2xl max-h-[92vh] flex flex-col justify-between overflow-hidden"
+            onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 flex-none">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-[#06b6d4]/10 text-[#0891b2] flex items-center justify-center flex-none">
+                        <i data-lucide="scale" class="w-5 h-5 text-[#06b6d4]"></i>
+                    </div>
+                    <div>
+                        <h2 id="disclaimerModalTitle" class="text-base font-black font-game uppercase tracking-wide text-slate-900 leading-tight">
+                            Legal & Fan Project Notice
+                        </h2>
+                        <p id="disclaimerModalSubtitle" class="text-[11px] text-slate-500 mt-0.5">
+                            Unofficial, Non-Commercial Fan Project
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeDisclaimerModal()"
+                    class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-3 pr-0.5 text-xs text-slate-600 leading-relaxed">
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 font-medium text-slate-700">
+                    <span id="disclaimerIntroText"><strong>Colour Brain: Disney Edition – Fan Expansion</strong> is an unofficial, non-commercial companion app created solely for personal and family use.</span>
+                </div>
+                <ul class="space-y-2.5 text-slate-600 text-xs">
+                    <li class="flex items-start gap-2">
+                        <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
+                        <span id="disclaimerNoAffiliationText"><strong>No Affiliation:</strong> This project is not affiliated with, endorsed by, sponsored by, or connected to <strong>Big Potato Games Ltd.</strong> or <strong>The Walt Disney Company</strong> (including Disney, Pixar, or their subsidiaries).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
+                        <span id="disclaimerTrademarksText"><strong>Trademark & Copyright Attribution:</strong> <em>Colour Brain</em> is a registered trademark of Big Potato Games Ltd. All Disney and Pixar characters, titles, logos, and related marks are copyright and trademarks of Disney Enterprises, Inc. and its licensors.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
+                        <span id="disclaimerNonCommercialText"><strong>Non-Commercial:</strong> This companion is 100% free, open-source, and non-monetized. It features no advertisements, tracking, in-app purchases, or donation links.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-[#0891b2] font-bold text-sm leading-none mt-0.5">•</span>
+                        <span id="disclaimerRequiresBaseText"><strong>Requires Base Game:</strong> This tool is an auxiliary prompt generator only and is not a standalone game. It requires the official physical <em>Colour Brain: Disney Edition</em> board game and cards to play.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Footer CTA -->
+            <div class="pt-3 border-t border-slate-200 flex-none">
+                <button type="button" onclick="closeDisclaimerModal()"
+                    class="w-full py-3 rounded-2xl bg-[#06b6d4] hover:bg-[#0891b2] text-white font-black text-xs uppercase tracking-wider font-game shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                    <span id="disclaimerCloseBtnText">Close Notice</span>
+                </button>
             </div>
         </div>
     </div>
@@ -1149,7 +1226,16 @@
                 timesUpLabel: "TIME'S UP!",
                 voiceLabel: "Auto Read-Aloud",
                 voiceSubtitle: "Voice host reads cards (EN / ES)",
-                speakCardTooltip: "Read Card Aloud (S)"
+                speakCardTooltip: "Read Card Aloud (S)",
+                legalNoticeBtn: "Legal & Fan Notice",
+                disclaimerTitle: "Legal & Fan Project Notice",
+                disclaimerSubtitle: "Unofficial, Non-Commercial Fan Project",
+                disclaimerIntro: "<strong>Colour Brain: Disney Edition – Fan Expansion</strong> is an unofficial, non-commercial companion app created solely for personal and family use.",
+                disclaimerNoAffiliation: "<strong>No Affiliation:</strong> This project is not affiliated with, endorsed by, sponsored by, or connected to <strong>Big Potato Games Ltd.</strong> or <strong>The Walt Disney Company</strong> (including Disney, Pixar, or their subsidiaries).",
+                disclaimerTrademarks: "<strong>Trademark & Copyright Attribution:</strong> <em>Colour Brain</em> is a registered trademark of Big Potato Games Ltd. All Disney and Pixar characters, titles, logos, and related marks are copyright and trademarks of Disney Enterprises, Inc. and its licensors.",
+                disclaimerNonCommercial: "<strong>Non-Commercial:</strong> This companion is 100% free, open-source, and non-monetized. It features no advertisements, tracking, in-app purchases, or donation links.",
+                disclaimerRequiresBase: "<strong>Requires Base Game:</strong> This tool is an auxiliary prompt generator only and is not a standalone game. It requires the official physical <em>Colour Brain: Disney Edition</em> board game and cards to play.",
+                disclaimerCloseBtn: "Close Notice"
             },
             es: {
                 deckSubtitle: "Pack de Expansión Disney",
@@ -1236,7 +1322,16 @@
                 timesUpLabel: "¡TIEMPO!",
                 voiceLabel: "Lectura por Voz",
                 voiceSubtitle: "El presentador lee las cartas (EN / ES)",
-                speakCardTooltip: "Leer Carta en Voz Alta (S)"
+                speakCardTooltip: "Leer Carta en Voz Alta (S)",
+                legalNoticeBtn: "Aviso Legal y Fan",
+                disclaimerTitle: "Aviso Legal y Proyecto Fan",
+                disclaimerSubtitle: "Proyecto Fan No Oficial y No Comercial",
+                disclaimerIntro: "<strong>Colour Brain: Disney Edition – Fan Expansion</strong> es una aplicación complementaria no oficial y no comercial creada exclusivamente para uso personal y familiar.",
+                disclaimerNoAffiliation: "<strong>Sin Afiliación:</strong> Este proyecto no está afiliado, respaldado, patrocinado ni vinculado a <strong>Big Potato Games Ltd.</strong> ni a <strong>The Walt Disney Company</strong> (incluidos Disney, Pixar o sus filiales).",
+                disclaimerTrademarks: "<strong>Marcas Registradas y Derechos de Autor:</strong> <em>Colour Brain</em> es una marca registrada de Big Potato Games Ltd. Todos los personajes, títulos, logotipos y marcas relacionadas de Disney y Pixar son marcas registradas y propiedad de Disney Enterprises, Inc. y sus licenciantes.",
+                disclaimerNonCommercial: "<strong>No Comercial:</strong> Este complemento es 100% gratuito, de código abierto y no monetizado. No incluye publicidad, seguimiento, compras dentro de la app ni enlaces de donación.",
+                disclaimerRequiresBase: "<strong>Requiere el Juego Base:</strong> Esta herramienta es un generador auxiliar de preguntas y no un juego independiente. Requiere el juego de mesa físico oficial <em>Colour Brain: Disney Edition</em> y sus cartas para jugar.",
+                disclaimerCloseBtn: "Cerrar Aviso"
             }
         };
 
@@ -1407,6 +1502,26 @@
             if (gS4D) gS4D.innerHTML = t.guideStep4Desc;
             const gGotIt = document.getElementById('guideGotItBtn');
             if (gGotIt) gGotIt.innerText = t.guideGotItBtn;
+
+            // Legal & Fan Project Notice labels
+            const menuLegal = document.getElementById('menuLegalNoticeLabel');
+            if (menuLegal) menuLegal.innerText = t.legalNoticeBtn;
+            const discTitle = document.getElementById('disclaimerModalTitle');
+            if (discTitle) discTitle.innerText = t.disclaimerTitle;
+            const discSub = document.getElementById('disclaimerModalSubtitle');
+            if (discSub) discSub.innerText = t.disclaimerSubtitle;
+            const discIntro = document.getElementById('disclaimerIntroText');
+            if (discIntro) discIntro.innerHTML = t.disclaimerIntro;
+            const discNoAff = document.getElementById('disclaimerNoAffiliationText');
+            if (discNoAff) discNoAff.innerHTML = t.disclaimerNoAffiliation;
+            const discTm = document.getElementById('disclaimerTrademarksText');
+            if (discTm) discTm.innerHTML = t.disclaimerTrademarks;
+            const discNc = document.getElementById('disclaimerNonCommercialText');
+            if (discNc) discNc.innerHTML = t.disclaimerNonCommercial;
+            const discReq = document.getElementById('disclaimerRequiresBaseText');
+            if (discReq) discReq.innerHTML = t.disclaimerRequiresBase;
+            const discClose = document.getElementById('disclaimerCloseBtnText');
+            if (discClose) discClose.innerText = t.disclaimerCloseBtn;
 
             renderGuideSwatches();
             updateDeckCountsAndSelectionUI();
@@ -2596,6 +2711,21 @@
             if (modal) modal.classList.add('hidden');
         }
 
+        // ================= LEGAL & FAN PROJECT NOTICE MODAL =================
+        function openDisclaimerModal() {
+            playTone(580, 'sine', 0.05, 0.08);
+            toggleMenu(false);
+            const modal = document.getElementById('disclaimerModal');
+            if (modal) modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDisclaimerModal() {
+            playTone(480, 'sine', 0.05, 0.08);
+            const modal = document.getElementById('disclaimerModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
         // ================= THEME & DECK ENGINE =================
         function setThemeAndDeck(deckSelection) {
             const selectionArray = Array.isArray(deckSelection) ? deckSelection : [deckSelection || 'all'];
@@ -3337,11 +3467,20 @@
             const sideMenu = document.getElementById('sideMenuOverlay');
             const winnerModal = document.getElementById('winnerModal');
             const guideModal = document.getElementById('howToPlayModal');
+            const disclaimerModal = document.getElementById('disclaimerModal');
             const isModalOpen = (wizardModal && !wizardModal.classList.contains('hidden')) ||
                 (sideMenu && !sideMenu.classList.contains('hidden')) ||
                 (winnerModal && !winnerModal.classList.contains('hidden')) ||
-                (guideModal && !guideModal.classList.contains('hidden'));
-            if (isModalOpen) return;
+                (guideModal && !guideModal.classList.contains('hidden')) ||
+                (disclaimerModal && !disclaimerModal.classList.contains('hidden'));
+            if (isModalOpen) {
+                if (e.code === 'Escape') {
+                    if (disclaimerModal && !disclaimerModal.classList.contains('hidden')) closeDisclaimerModal();
+                    else if (guideModal && !guideModal.classList.contains('hidden')) closeHowToPlayModal();
+                    else if (sideMenu && !sideMenu.classList.contains('hidden')) toggleMenu(false);
+                }
+                return;
+            }
 
             if (e.code === 'Space') {
                 e.preventDefault();

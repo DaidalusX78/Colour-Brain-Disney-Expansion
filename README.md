@@ -75,6 +75,7 @@ src/
 ├── index.html                                # Main production entry point
 ├── questions.js                             # Trivia database array (questions, colours, artwork)
 ├── colourbrain_disney_questions_v1.7.0.csv   # Source spreadsheet export for trivia
+├── footer.md                                 # Legal & fan project notice and disclaimer
 ├── manifest.json                             # Web app manifest for PWA installation
 ├── sw.js                                     # Service worker for offline asset caching
 ├── assets/
@@ -119,11 +120,12 @@ The repository is configured with a GitHub Actions workflow (`.github/workflows/
 
 ---
 
-## ⚖️ Disclaimer
+## ⚖️ Disclaimer & Legal Notice
 
 This is an **unofficial, non-commercial fan-made companion app and expansion deck** created for personal tabletop game nights. 
 
 - *Colour Brain* is a registered trademark of **Big Potato Games**.
 - Disney, Pixar, Marvel, Star Wars, and related character names, franchises, and artwork are registered trademarks of **Disney Enterprises, Inc.**, **Pixar**, **Marvel Characters, Inc.**, and **Lucasfilm Ltd.**
 - No copyright infringement is intended. Please support the official game by purchasing *Colour Brain: Disney Edition* from Big Potato Games.
+- For complete legal details, see [footer.md](footer.md) or tap the **Legal & Fan Notice** link in the app's settings menu.
 
